@@ -13,7 +13,8 @@ VERSION=`cat /etc/rsquared/version`
 #   * $RSQUAREDD_RESYNC
 #   * $RSQUAREDD_P2P_ENDPOINT
 #   * $RSQUAREDD_WITNESS_ID
-#   * $RSQUAREDD_PRIVATE_KEY
+#   * $RSQUAREDD_PRIVATE_KEY 
+#   * $RSQUAREDD_DEBUG_PRIVATE_KEY
 #   * $RSQUAREDD_SEED
 #   * $RSQUAREDD_TRACK_ACCOUNTS
 #   * $RSQUAREDD_PARTIAL_OPERATIONS
@@ -52,6 +53,10 @@ fi
 
 if [[ ! -z "$RSQUAREDD_PRIVATE_KEY" ]]; then
     ARGS+=" --private-key=$RSQUAREDD_PRIVATE_KEY"
+fi
+
+if [[ ! -z "$RSQUAREDD_DEBUG_PRIVATE_KEY" ]]; then
+    ARGS+=" --debug-private-key=$RSQUAREDD_DEBUG_PRIVATE_KEY"
 fi
 
 if [[ ! -z "$RSQUAREDD_SEED" ]]; then

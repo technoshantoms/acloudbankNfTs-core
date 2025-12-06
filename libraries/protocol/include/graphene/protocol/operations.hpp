@@ -1,27 +1,4 @@
-/*
- * Copyright (c) 2015 Cryptonomex, Inc., and contributors.
- * Copyright (c) 2020-2023 Revolution Populi Limited, and contributors.
- *
- * The MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #pragma once
 #include <graphene/protocol/base.hpp>
 #include <graphene/protocol/account.hpp>
@@ -47,6 +24,12 @@
 #include <graphene/protocol/content_card.hpp>
 #include <graphene/protocol/permission.hpp>
 #include <graphene/protocol/commit_reveal.hpp>
+
+//nft
+#include <graphene/chain/protocol/custom_permission.hpp>
+#include <graphene/chain/protocol/custom_account_authority.hpp>
+#include <graphene/chain/protocol/offer.hpp>
+#include <graphene/chain/protocol/nft_ops.hpp>
 
 namespace graphene { namespace protocol {
 
@@ -127,7 +110,24 @@ namespace graphene { namespace protocol {
             /* 68 */ tap_open_operation,
             /* 69 */ tap_connect_operation,
             /* 70 */ account_fund_connection_operation,
-            /* 71 */ connection_fund_account_operation      // VIRTUAL
+            /* 71 */ connection_fund_account_operation,      // VIRTUAL
+            /* 72 */ sweeps_vesting_claim_operation,
+            /* 73 */ custom_permission_create_operation,
+            /* 74 */ custom_permission_update_operation,
+            /* 75 */ custom_permission_delete_operation,
+            /* 76 */ custom_account_authority_create_operation,
+            /* 77 */ custom_account_authority_update_operation,
+            /* 78 */ custom_account_authority_delete_operation,
+            /* 79 */ offer_operation,
+            /* 80 */ bid_operation,
+            /* 81 */ cancel_offer_operation,
+            /* 82 */ finalize_offer_operation,
+            /* 83 */ nft_metadata_create_operation,
+            /* 83 */ nft_metadata_update_operation,
+            /* 85 */ nft_mint_operation,
+            /* 86 */ nft_safe_transfer_from_operation,
+            /* 87 */ nft_approve_operation,
+            /* 88 */ nft_set_approval_for_all_operation
          > operation;
 
    /// @} // operations group

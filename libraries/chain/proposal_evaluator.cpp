@@ -1,27 +1,4 @@
-/*
- * Copyright (c) 2015-2018 Cryptonomex, Inc., and contributors.
- * Copyright (c) 2020-2023 Revolution Populi Limited, and contributors.
- *
- * The MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #include <graphene/chain/database.hpp>
 #include <graphene/chain/proposal_evaluator.hpp>
 #include <graphene/chain/proposal_object.hpp>
@@ -64,6 +41,71 @@ struct proposal_operation_hardfork_visitor
 
    void operator()(const graphene::chain::asset_publish_feed_operation &v) const {
 
+   }
+
+   // NFT
+   void operator()(const custom_permission_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_create_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_permission_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_update_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_permission_delete_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_delete_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_create_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_update_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_delete_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_delete_operation not allowed yet!" );
+   }
+
+   void operator()(const offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "offer_operation not allowed yet!" );
+   }
+
+   void operator()(const bid_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "bid_operation not allowed yet!" );
+   }
+
+   void operator()(const cancel_offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "cancel_offer_operation not allowed yet!" );
+   }
+
+   void operator()(const finalize_offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "finalize_offer_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_metadata_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_metadata_create_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_metadata_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_metadata_update_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_mint_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_mint_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_safe_transfer_from_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_safe_transfer_from_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_approve_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_approve_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_set_approval_for_all_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_set_approval_for_all_operation not allowed yet!" );
    }
 
    void operator()(const graphene::chain::committee_member_update_global_parameters_operation &op) const {

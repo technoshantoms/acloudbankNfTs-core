@@ -39,6 +39,13 @@
 #include <graphene/chain/worker_object.hpp>
 #include <graphene/custom_operations/custom_operations_plugin.hpp>
 
+//NFT
+
+#include <graphene/chain/custom_permission_object.hpp>
+#include <graphene/chain/custom_account_authority_object.hpp>
+#include <graphene/chain/offer_object.hpp>
+#include <graphene/chain/nft_object.hpp>
+
 #include <iostream>
 
 using namespace graphene::chain;
