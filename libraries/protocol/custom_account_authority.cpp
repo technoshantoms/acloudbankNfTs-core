@@ -1,5 +1,5 @@
-#include <graphene/chain/protocol/custom_account_authority.hpp>
-#include <graphene/chain/protocol/operations.hpp>
+#include <graphene/protocol/custom_account_authority.hpp>
+#include <graphene/protocol/operations.hpp>
 
 namespace graphene
 {

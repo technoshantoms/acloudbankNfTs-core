@@ -1,6 +1,6 @@
 #pragma once
-#include <graphene/chain/protocol/base.hpp>
-#include <graphene/chain/protocol/types.hpp>
+#include <graphene/protocol/base.hpp>
+#include <graphene/protocol/types.hpp>
 
 namespace graphene { namespace chain {
 

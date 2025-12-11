@@ -1,5 +1,5 @@
 #pragma once
-#include <graphene/chain/protocol/base.hpp>
+#include <graphene/protocol/base.hpp>
 
 namespace graphene
 {

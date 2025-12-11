@@ -28,10 +28,10 @@
 #include <graphene/protocol/nft_lottery.hpp>
 
 //nft
-#include <graphene/chain/protocol/custom_permission.hpp>
-#include <graphene/chain/protocol/custom_account_authority.hpp>
-#include <graphene/chain/protocol/offer.hpp>
-#include <graphene/chain/protocol/nft_ops.hpp>
+#include <graphene/protocol/custom_permission.hpp>
+#include <graphene/protocol/custom_account_authority.hpp>
+#include <graphene/protocol/offer.hpp>
+#include <graphene/protocol/nft_ops.hpp>
 
 namespace graphene { namespace protocol {
 

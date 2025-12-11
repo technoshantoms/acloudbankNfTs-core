@@ -1,5 +1,5 @@
 #pragma once
-#include <graphene/chain/protocol/operations.hpp>
+#include <graphene/protocol/operations.hpp>
 #include <graphene/db/generic_index.hpp>
 
 namespace graphene

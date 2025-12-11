@@ -31,6 +31,9 @@ list(APPEND SOURCES account.cpp
                     custom_permission.cpp
                     custom_account_authority.cpp
                     offer.cpp
+                    nft.cpp
+                    nft_lottery.cpp
+                    account_role.cpp
                     transaction.cpp
                     types.cpp
                     withdraw_permission.cpp

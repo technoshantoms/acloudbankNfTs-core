@@ -1,4 +1,4 @@
-#include <graphene/chain/protocol/offer.hpp>
+#include <graphene/protocol/offer.hpp>
 #include <fc/io/raw.hpp>
 
 namespace graphene

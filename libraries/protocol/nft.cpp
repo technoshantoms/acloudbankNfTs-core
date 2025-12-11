@@ -1,5 +1,5 @@
-#include <graphene/chain/protocol/nft_ops.hpp>
-#include <graphene/chain/protocol/operations.hpp>
+#include <graphene/protocol/nft_ops.hpp>
+#include <graphene/protocol/operations.hpp>
 
 namespace graphene
 {
