@@ -2709,6 +2709,32 @@ fc::optional<custom_permission_object> database_api_impl::get_custom_permission_
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
+ // NFT
+   uint64_t nft_get_balance(const account_id_type owner) const;
+   optional<account_id_type> nft_owner_of(const nft_id_type token_id) const;
+   optional<account_id_type> nft_get_approved(const nft_id_type token_id) const;
+   bool nft_is_approved_for_all(const account_id_type owner, const account_id_type operator_) const;
+   string nft_get_name(const nft_metadata_id_type nft_metadata_id) const;
+   string nft_get_symbol(const nft_metadata_id_type nft_metadata_id) const;
+   string nft_get_token_uri(const nft_id_type token_id) const;
+   uint64_t nft_get_total_supply(const nft_metadata_id_type nft_metadata_id) const;
+   nft_object nft_token_by_index(const nft_metadata_id_type nft_metadata_id, const uint64_t token_idx) const;
+   nft_object nft_token_of_owner_by_index(const nft_metadata_id_type nft_metadata_id, const account_id_type owner, const uint64_t token_idx) const;
+   vector<nft_object> nft_get_all_tokens() const;
+   vector<nft_object> nft_get_tokens_by_owner(const account_id_type owner) const;
+
+   // Marketplace
+   vector<offer_object> list_offers(const offer_id_type lower_id, uint32_t limit) const;
+   vector<offer_object> list_sell_offers(const offer_id_type lower_id, uint32_t limit) const;
+   vector<offer_object> list_buy_offers(const offer_id_type lower_id, uint32_t limit) const;
+   vector<offer_history_object> list_offer_history(const offer_history_id_type lower_id, uint32_t limit) const;
+   vector<offer_object> get_offers_by_issuer(const offer_id_type lower_id, const account_id_type issuer_account_id, uint32_t limit) const;
+   vector<offer_object> get_offers_by_item(const offer_id_type lower_id, const nft_id_type item, uint32_t limit) const;
+   vector<offer_history_object> get_offer_history_by_issuer(const offer_history_id_type lower_id, const account_id_type issuer_account_id, uint32_t limit) const;
+   vector<offer_history_object> get_offer_history_by_item(const offer_history_id_type lower_id, const nft_id_type item, uint32_t limit) const;
+   vector<offer_history_object> get_offer_history_by_bidder(const offer_history_id_type lower_id, const account_id_type bidder_account_id, uint32_t limit) const;
+
+
 uint64_t database_api::nft_get_balance(const account_id_type owner) const
 {
    return my->nft_get_balance(owner);
@@ -3175,19 +3201,18 @@ vector<offer_history_object> database_api_impl::get_offer_history_by_item(const 
    return result;
 }
 
-vector<offer_history_object> database_api_impl::get_offer_history_by_bidder(const offer_history_id_type lower_id, const account_id_type bidder_account_id, uint32_t limit) const
-{
-   FC_ASSERT( limit <= 100 );
-   const auto& oh_idx = _db.get_index_type<offer_history_index>().indices().get<by_id>();
+vector<offer_history_object> database_api_impl::get_offer_history_by_bidder(const offer_history_id_type lower_id, const account_id_type bidder_account_id, uint32_t limit) const {
+   FC_ASSERT(limit <= api_limit_all_offers_count,
+             "Number of querying offers can not be greater than ${configured_limit}",
+             ("configured_limit", api_limit_all_offers_count));
+   const auto &oh_idx = _db.get_index_type<offer_history_index>().indices().get<by_id>();
    vector<offer_history_object> result;
    result.reserve(limit);
 
    auto itr = oh_idx.lower_bound(lower_id);
 
-   while(limit && itr != oh_idx.end())
-   {
-      if(itr->bidder && *itr->bidder == bidder_account_id)
-      {
+   while (limit && itr != oh_idx.end()) {
+      if (itr->bidder && *itr->bidder == bidder_account_id) {
          result.emplace_back(*itr);
          limit--;
       }

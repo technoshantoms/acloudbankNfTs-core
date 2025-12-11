@@ -24,6 +24,12 @@ namespace graphene { namespace wallet {
  */
 object* create_object( const fc::variant& v );
 
+enum authority_type
+{
+   owner,
+   active
+};
+
 /**
  * This wallet assumes it is connected to the database server with a high-bandwidth, low-latency connection and
  * performs minimal caching. This API could be provided locally to be used by a web interface.
@@ -633,6 +639,42 @@ class wallet_api
                                           uint32_t referrer_percent,
                                           bool broadcast = false);
 
+
+      /** Updates account public keys
+       *
+       * @param name the name of the existing account
+       * @param old_owner the owner key for the named account to be replaced
+       * @param new_owner the owner key for the named account to be set as new
+       * @param old_active the active key for the named account to be replaced
+       * @param new_active the active key for the named account to be set as new
+       * @param broadcast true to broadcast the transaction on the network
+       * @returns the signed transaction updating account public keys
+       */
+      signed_transaction update_account_keys(string name,
+                                             public_key_type old_owner,
+                                             public_key_type new_owner,
+                                             public_key_type old_active,
+                                             public_key_type new_active,
+                                             bool broadcast = false);
+
+      /**
+       * This method updates the key of an authority for an exisiting account.
+       * Warning: You can create impossible authorities using this method. The method
+       * will fail if you create an impossible owner authority, but will allow impossible
+       * active and posting authorities.
+       *
+       * @param account_name The name of the account whose authority you wish to update
+       * @param type The authority type. e.g. owner or active
+       * @param key The public key to add to the authority
+       * @param weight The weight the key should have in the authority. A weight of 0 indicates the removal of the key.
+       * @param broadcast true if you wish to broadcast the transaction.
+       */
+      signed_transaction update_account_auth_key(string account_name,
+                                                 authority_type type,
+                                                 public_key_type key,
+                                                 weight_type weight,
+                                                 bool broadcast);
+
       /**
        *  Upgrades an account to prime status.
        *  This makes the account holder a 'lifetime member'.
@@ -647,7 +689,7 @@ class wallet_api
        *
        * @todo why no referrer_percent here?
        *
-       * @see suggest_brain_key()
+       * @see suggest_brain_key(
        * @see register_account()
        *
        * @param brain_key the brain key used for generating the account's private keys
@@ -2034,6 +2076,8 @@ FC_API( graphene::wallet::wallet_api,
         (suggest_brain_key)
         (derive_owner_keys_from_brain_key)
         (register_account)
+        (update_account_keys)
+        (update_account_auth_key)
         (upgrade_account)
         (create_account_with_brain_key)
         (sell_asset)
