@@ -1711,6 +1711,7 @@ class wallet_api
       vector<custom_account_authority_object> get_custom_account_authorities_by_permission_id(custom_permission_id_type permission_id) const;
       vector<custom_account_authority_object> get_custom_account_authorities_by_permission_name(string owner, string permission_name) const;
       vector<authority> get_active_custom_account_authorities_by_operation(string owner, int operation_type) const;
+
       /////////
       // NFT //
       /////////
@@ -1724,6 +1725,9 @@ class wallet_api
        * @param revenue_split revenue split for the sale
        * @param is_transferable can transfer the NFT or not
        * @param is_sellable can sell NFT or not
+       * @param role_id account role id
+       * @param max_supply max supply of NTFs
+       * @param lottery_options lottery options
        * @param broadcast  true to broadcast transaction to the network
        * @return Signed transaction transfering the funds
        */
@@ -1735,6 +1739,9 @@ class wallet_api
                                     optional<uint16_t> revenue_split,
                                     bool is_transferable,
                                     bool is_sellable,
+                                    optional<account_role_id_type> role_id,
+                                    optional<share_type> max_supply,
+                                    optional<nft_lottery_options> lottery_options,
                                     bool broadcast);
 
       /**
@@ -1748,6 +1755,7 @@ class wallet_api
        * @param revenue_split revenue split for the sale
        * @param is_transferable can transfer the NFT or not
        * @param is_sellable can sell NFT or not
+       * @param role_id account role id
        * @param broadcast  true to broadcast transaction to the network
        * @return Signed transaction transfering the funds
        */
@@ -1760,6 +1768,7 @@ class wallet_api
                                     optional<uint16_t> revenue_split,
                                     optional<bool> is_transferable,
                                     optional<bool> is_sellable,
+                                    optional<account_role_id_type> role_id,
                                     bool broadcast);
 
       /**
@@ -1860,17 +1869,38 @@ class wallet_api
 
       /**
        * @brief Returns operator approved state for all NFT owned by owner
-       * @param owner NFT owner account ID
-       * @param token_id NFT ID
+       * @param owner_account_id_or_name NFT owner account ID or name
+       * @param operator_account_id_or_name NFT operator account ID or name
        * @return True if operator is approved for all NFT owned by owner, else False
        */
       bool nft_is_approved_for_all(string owner_account_id_or_name, string operator_account_id_or_name) const;
 
       /**
        * @brief Returns all tokens
+       * @param limit the maximum number of NFT objects to return (max: 100)
+       * @param lower_id ID of the first NFT object to include in the list.
        * @return Returns vector of NFT objects, empty vector if none
        */
-      vector<nft_object> nft_get_all_tokens() const;
+      vector<nft_object> nft_get_all_tokens(uint32_t limit, optional<nft_id_type> lower_id) const;
+
+      /**
+       * @brief Returns all tokens owned by owner
+       * @param owner NFT owner account ID
+       * @param limit the maximum number of NFT objects to return (max: 100)
+       * @param lower_id ID of the first NFT object to include in the list.
+       * @return Returns vector of NFT objects, empty vector if none
+       */
+      vector<nft_object> nft_get_tokens_by_owner(account_id_type owner, uint32_t limit, optional<nft_id_type> lower_id) const;
+
+      /**
+       * @brief Returns all NFT metadata objects owned by owner
+       * @param owner NFT owner account ID
+       * @param limit the maximum number of NFT metadata objects to return (max: 100)
+       * @param lower_id ID of the first NFT metadata object to include in the list.
+       * @return Returns vector of NFT metadata objects, empty vector if none
+       */
+      vector<nft_metadata_object> nft_get_metadata_by_owner(account_id_type owner, uint32_t limit, optional<nft_metadata_id_type> lower_id) const;
+      signed_transaction nft_lottery_buy_ticket( nft_metadata_id_type lottery, account_id_type buyer, uint64_t tickets_to_buy, bool broadcast );
 
       signed_transaction create_offer(set<nft_id_type> item_ids,
                                       string issuer_accound_id_or_name,
@@ -1897,6 +1927,28 @@ class wallet_api
       vector<offer_history_object> get_offer_history_by_issuer(string issuer_account_id_or_name, uint32_t limit, optional<offer_history_id_type> lower_id) const;
       vector<offer_history_object> get_offer_history_by_item(const nft_id_type item, uint32_t limit, optional<offer_history_id_type> lower_id) const;
       vector<offer_history_object> get_offer_history_by_bidder(string bidder_account_id_or_name, uint32_t limit, optional<offer_history_id_type> lower_id) const;
+
+      signed_transaction create_account_role(string owner_account_id_or_name,
+                                             string name,
+                                             string metadata,
+                                             flat_set<int> allowed_operations,
+                                             flat_set<account_id_type> whitelisted_accounts,
+                                             time_point_sec valid_to,
+                                             bool broadcast);
+      signed_transaction update_account_role(string owner_account_id_or_name,
+                                             account_role_id_type role_id,
+                                             optional<string> name,
+                                             optional<string> metadata,
+                                             flat_set<int> operations_to_add,
+                                             flat_set<int> operations_to_remove,
+                                             flat_set<account_id_type> accounts_to_add,
+                                             flat_set<account_id_type> accounts_to_remove,
+                                             optional<time_point_sec> valid_to,
+                                             bool broadcast);
+      signed_transaction delete_account_role(string owner_account_id_or_name,
+                                             account_role_id_type role_id,
+                                             bool broadcast);
+      vector<account_role_object> get_account_roles_by_owner(string owner_account_id_or_name) const;
 
 
       void dbg_make_uia(string creator, string symbol);
@@ -2044,6 +2096,9 @@ FC_API( graphene::wallet::wallet_api,
         (get_offer_history_by_issuer)
         (get_offer_history_by_item)
         (get_offer_history_by_bidder)
+        (create_account_role)
+        (update_account_role)
+        (delete_account_role)
         (withdraw_vesting)
         (vote_for_committee_member)
         (vote_for_witness)

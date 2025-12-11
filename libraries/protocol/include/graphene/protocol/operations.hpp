@@ -25,6 +25,8 @@
 #include <graphene/protocol/permission.hpp>
 #include <graphene/protocol/commit_reveal.hpp>
 
+#include <graphene/protocol/nft_lottery.hpp>
+
 //nft
 #include <graphene/chain/protocol/custom_permission.hpp>
 #include <graphene/chain/protocol/custom_account_authority.hpp>
@@ -127,7 +129,10 @@ namespace graphene { namespace protocol {
             /* 85 */ nft_mint_operation,
             /* 86 */ nft_safe_transfer_from_operation,
             /* 87 */ nft_approve_operation,
-            /* 88 */ nft_set_approval_for_all_operation
+            /* 88 */ nft_set_approval_for_all_operation,
+            /* 89 */ nft_lottery_token_purchase_operation,
+            /* 90 */ nft_lottery_reward_operation,
+            /* 91 */ nft_lottery_end_operation,
          > operation;
 
    /// @} // operations group

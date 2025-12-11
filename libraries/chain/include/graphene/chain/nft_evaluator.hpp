@@ -2,7 +2,7 @@
 
 #include <graphene/chain/database.hpp>
 #include <graphene/chain/evaluator.hpp>
-#include <graphene/chain/protocol/operations.hpp>
+#include <graphene/protocol/operations.hpp>
 #include <graphene/chain/protocol/types.hpp>
 
 namespace graphene { namespace chain {

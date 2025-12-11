@@ -878,6 +878,9 @@ signed_transaction wallet_api::nft_metadata_create(string owner_account_id_or_na
                                                    optional<uint16_t> revenue_split,
                                                    bool is_transferable,
                                                    bool is_sellable,
+                                                   optional<account_role_id_type> role_id,
+                                                   optional<share_type> max_supply,
+                                                   optional<nft_lottery_options> lottery_options,
                                                    bool broadcast)
 {
    account_object owner_account = my->get_account(owner_account_id_or_name);
@@ -909,6 +912,51 @@ signed_transaction wallet_api::nft_metadata_create(string owner_account_id_or_na
    return my->sign_transaction( trx, broadcast );
 }
 
+signed_transaction wallet_api::nft_metadata_create(string owner_account_id_or_name,
+                                                   string name,
+                                                   string symbol,
+                                                   string base_uri,
+                                                   optional<string> revenue_partner,
+                                                   optional<uint16_t> revenue_split,
+                                                   bool is_transferable,
+                                                   bool is_sellable,
+                                                   optional<account_role_id_type> role_id,
+                                                   optional<share_type> max_supply,
+                                                   optional<nft_lottery_options> lottery_options,
+                                                   bool broadcast)
+{
+   account_object owner_account = my->get_account(owner_account_id_or_name);
+
+   nft_metadata_create_operation op;
+   op.owner = owner_account.id;
+   op.name = name;
+   op.symbol = symbol;
+   op.base_uri = base_uri;
+   if( revenue_partner )
+   {
+      account_object partner_account = my->get_account(*revenue_partner);
+      op.revenue_partner = partner_account.id;
+      uint16_t rev_split = 0;
+      if( revenue_split )
+      {
+         rev_split = *revenue_split;
+      }
+      op.revenue_split = rev_split;
+   }
+   op.is_transferable = is_transferable;
+   op.is_sellable = is_sellable;
+   op.account_role = role_id;
+   op.max_supply = max_supply;
+   op.lottery_options = lottery_options;
+
+   signed_transaction trx;
+   trx.operations.push_back(op);
+   my->set_operation_fees( trx, my->_remote_db->get_global_properties().parameters.current_fees );
+   trx.validate();
+
+   return my->sign_transaction( trx, broadcast );
+}
+
 signed_transaction wallet_api::nft_metadata_update(string owner_account_id_or_name,
                                                    nft_metadata_id_type nft_metadata_id,
                                                    optional<string> name,
@@ -918,6 +966,7 @@ signed_transaction wallet_api::nft_metadata_update(string owner_account_id_or_na
                                                    optional<uint16_t> revenue_split,
                                                    optional<bool> is_transferable,
                                                    optional<bool> is_sellable,
+                                                   optional<account_role_id_type> role_id,
                                                    bool broadcast)
 {
    account_object owner_account = my->get_account(owner_account_id_or_name);
@@ -941,6 +990,7 @@ signed_transaction wallet_api::nft_metadata_update(string owner_account_id_or_na
    }
    op.is_transferable = is_transferable;
    op.is_sellable = is_sellable;
+   op.account_role = role_id;
 
    signed_transaction trx;
    trx.operations.push_back(op);
@@ -1076,9 +1126,43 @@ bool wallet_api::nft_is_approved_for_all(string owner_account_id_or_name, string
    return my->_remote_db->nft_is_approved_for_all(owner_account.id, operator_account.id);
 }
 
-vector<nft_object> wallet_api::nft_get_all_tokens() const
+vector<nft_object> wallet_api::nft_get_all_tokens(uint32_t limit, optional<nft_id_type> lower_id) const
 {
-   return my->_remote_db->nft_get_all_tokens();
+   nft_id_type lb_id;
+   if(lower_id)
+      lb_id = *lower_id;
+   return my->_remote_db->nft_get_all_tokens(lb_id, limit);
+}
+
+vector<nft_object> wallet_api::nft_get_tokens_by_owner(account_id_type owner, uint32_t limit, optional<nft_id_type> lower_id) const
+{
+   nft_id_type lb_id;
+   if(lower_id)
+      lb_id = *lower_id;
+   return my->_remote_db->nft_get_tokens_by_owner(owner, lb_id, limit);
+}
+
+vector<nft_metadata_object> wallet_api::nft_get_metadata_by_owner(account_id_type owner, uint32_t limit, optional<nft_metadata_id_type> lower_id) const
+{
+   nft_metadata_id_type lb_id;
+   if(lower_id)
+      lb_id = *lower_id;
+   return my->_remote_db->nft_get_metadata_by_owner(owner, lb_id, limit);
+}
+
+signed_transaction wallet_api::nft_lottery_buy_ticket( nft_metadata_id_type lottery, account_id_type buyer, uint64_t tickets_to_buy, bool broadcast )
+{
+   nft_lottery_token_purchase_operation op;
+   op.lottery_id = lottery;
+   op.buyer = buyer;
+   op.tickets_to_buy = tickets_to_buy;
+
+   signed_transaction trx;
+   trx.operations.push_back(op);
+   my->set_operation_fees( trx, my->_remote_db->get_global_properties().parameters.current_fees );
+   trx.validate();
+
+   return my->sign_transaction( trx, broadcast );
 }
 
 signed_transaction wallet_api::create_offer(set<nft_id_type> item_ids,
@@ -1223,6 +1307,87 @@ vector<offer_history_object> wallet_api::get_offer_history_by_bidder(string bidd
    return my->_remote_db->get_offer_history_by_bidder(lb_id, bidder_account.id, limit);
 }
 
+signed_transaction wallet_api::create_account_role(string owner_account_id_or_name,
+                                                   string name,
+                                                   string metadata,
+                                                   flat_set<int> allowed_operations,
+                                                   flat_set<account_id_type> whitelisted_accounts,
+                                                   time_point_sec valid_to,
+                                                   bool broadcast)
+{
+   account_object owner_account = my->get_account(owner_account_id_or_name);
+
+   account_role_create_operation op;
+   op.owner = owner_account.id;
+   op.name = name;
+   op.metadata = metadata;
+   op.allowed_operations = allowed_operations;
+   op.whitelisted_accounts = whitelisted_accounts;
+   op.valid_to = valid_to;
+
+   signed_transaction trx;
+   trx.operations.push_back(op);
+   my->set_operation_fees( trx, my->_remote_db->get_global_properties().parameters.current_fees );
+   trx.validate();
+
+   return my->sign_transaction( trx, broadcast );
+}
+
+signed_transaction wallet_api::update_account_role(string owner_account_id_or_name,
+                                                   account_role_id_type role_id,
+                                                   optional<string> name,
+                                                   optional<string> metadata,
+                                                   flat_set<int> operations_to_add,
+                                                   flat_set<int> operations_to_remove,
+                                                   flat_set<account_id_type> accounts_to_add,
+                                                   flat_set<account_id_type> accounts_to_remove,
+                                                   optional<time_point_sec> valid_to,
+                                                   bool broadcast)
+{
+   account_object owner_account = my->get_account(owner_account_id_or_name);
+
+   account_role_update_operation op;
+   op.owner = owner_account.id;
+   op.account_role_id = role_id;
+   op.name = name;
+   op.metadata = metadata;
+   op.allowed_operations_to_add = operations_to_add;
+   op.allowed_operations_to_remove = operations_to_remove;
+   op.accounts_to_add = accounts_to_add;
+   op.accounts_to_remove = accounts_to_remove;
+   op.valid_to = valid_to;
+
+   signed_transaction trx;
+   trx.operations.push_back(op);
+   my->set_operation_fees( trx, my->_remote_db->get_global_properties().parameters.current_fees );
+   trx.validate();
+
+   return my->sign_transaction( trx, broadcast );
+}
+
+signed_transaction wallet_api::delete_account_role(string owner_account_id_or_name,
+                                                   account_role_id_type role_id,
+                                                   bool broadcast)
+{
+   account_object owner_account = my->get_account(owner_account_id_or_name);
+
+   account_role_delete_operation op;
+   op.owner = owner_account.id;
+   op.account_role_id = role_id;
+
+   signed_transaction trx;
+   trx.operations.push_back(op);
+   my->set_operation_fees( trx, my->_remote_db->get_global_properties().parameters.current_fees );
+   trx.validate();
+
+   return my->sign_transaction( trx, broadcast );
+}
+
+vector<account_role_object> wallet_api::get_account_roles_by_owner(string owner_account_id_or_name) const
+{
+   account_object owner_account = my->get_account(owner_account_id_or_name);
+   return my->_remote_db->get_account_roles_by_owner(owner_account.id);
+}
 signed_transaction wallet_api::sign_transaction2(signed_transaction tx, const vector<public_key_type>& signing_keys,
                                                  bool broadcast /* = false */)
 { try {
