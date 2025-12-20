@@ -156,3 +156,6 @@ constexpr size_t MAX_FEE_STABILIZATION_ITERATION  = 4;
 #define RSQUARED_WITNESSES_TOP_MAX 63
 // Randomly choose max 21 active witnesses (consensus algorithm)
 #define RSQUARED_WITNESSES_ACTIVE_MAX 21
+
+#define ACCOUNT_ROLES_MAX_PER_ACCOUNT                       20 // Max 20 roles can be created by a resource owner
+#define ACCOUNT_ROLES_MAX_LIFETIME                          365*24*60*60 // 1 Year

@@ -30,8 +30,8 @@ RUN \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD . /rsquared-core
-WORKDIR /rsquared-core
+ADD . /acloudbank-core
+WORKDIR /acloudbank-core
 
 # Compile
 # Previously -DCMAKE_BUILD_TYPE=Release \
@@ -52,26 +52,26 @@ RUN \
     install -s programs/witness_node/witness_node programs/genesis_util/get_dev_key programs/cli_wallet/cli_wallet /usr/local/bin && \
     #
     # Obtain version
-    mkdir /etc/rsquared && \
-    git rev-parse --short HEAD > /etc/rsquared/version
-    # git rev-parse --short HEAD > /etc/rsquared/version && \
+    mkdir /etc/acloudbank && \
+    git rev-parse --short HEAD > /etc/acloudbank/version
+    # git rev-parse --short HEAD > /etc/acloudbank/version && \
     # cd / && \
-    # rm -rf /rsquared-core
+    # rm -rf /acloudbank-core
 
 # FROM phusion/baseimage:18.04-1.0.0 AS run
 
 # COPY --from=build /usr/local/bin /usr/local/bin
-# COPY --from=build /etc/rsquared/version /etc/rsquared/version
+# COPY --from=build /etc/acloudbank/version /etc/acloudbank/version
 
 
 # Home directory $HOME
 WORKDIR /
-RUN useradd -s /bin/bash -m -d /var/lib/rsquared rsquared
-ENV HOME /var/lib/rsquared
-RUN chown rsquared:rsquared -R /var/lib/rsquared
+RUN useradd -s /bin/bash -m -d /var/lib/acloudbank acloudbank
+ENV HOME /var/lib/acloudbank
+RUN chown acloudbank:acloudbank -R /var/lib/acloudbank
 
 # Volume
-VOLUME ["/var/lib/rsquared", "/etc/rsquared"]
+VOLUME ["/var/lib/acloudbank", "/etc/acloudbank"]
 
 # rpc service:
 EXPOSE 8090
@@ -79,8 +79,8 @@ EXPOSE 8090
 EXPOSE 2771
 
 # default exec/config files
-ADD docker/default_config.ini /etc/rsquared/config.ini
-ADD docker/default_logging.ini /etc/rsquared/logging.ini
+ADD docker/default_config.ini /etc/acloudbank/config.ini
+ADD docker/default_logging.ini /etc/acloudbank/logging.ini
 ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod a+x /usr/local/bin/entrypoint.sh
 

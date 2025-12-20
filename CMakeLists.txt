@@ -1,11 +1,11 @@
-# Defines R-Squared library target.
+# Defines AcloudBank library target.
 cmake_minimum_required( VERSION 3.2 FATAL_ERROR )
-project( R-Squared LANGUAGES CXX C)
+project( AcloudBank LANGUAGES CXX C)
 
-set( BLOCKCHAIN_NAME "R-Squared" )
+set( BLOCKCHAIN_NAME "AcloudBank" )
 
 set( CLI_CLIENT_EXECUTABLE_NAME graphene_client )
-set( GUI_CLIENT_EXECUTABLE_NAME R-Squared )
+set( GUI_CLIENT_EXECUTABLE_NAME AcloudBank )
 set( CUSTOM_URL_SCHEME "gcs" )
 set( INSTALLER_APP_ID "68ad7005-8eee-49c9-95ce-9eed97e5b347" )
 
@@ -44,7 +44,7 @@ endif()
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules" )
 
 include(CheckCCompilerFlag)
-include(Utils)
+#include(Utils)
 
 # function to help with cUrl
 macro(FIND_CURL)
@@ -77,88 +77,6 @@ endmacro()
 # Save the old value of CMAKE_REQUIRED_FLAGS
 set( TEMP_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS} )
 
-# Check submodules
-if(NOT MANUAL_SUBMODULES)
-  find_package(Git)
-  if(GIT_FOUND)
-    function (check_submodule relative_path)
-      execute_process(COMMAND git rev-parse "HEAD" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${relative_path} OUTPUT_VARIABLE localHead)
-      execute_process(COMMAND git rev-parse "HEAD:${relative_path}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_VARIABLE checkedHead)
-      string(COMPARE EQUAL "${localHead}" "${checkedHead}" upToDate)
-      if (upToDate)
-        message(STATUS "Submodule '${relative_path}' is up-to-date")
-      else()
-        message(FATAL_ERROR "Submodule '${relative_path}' is not up-to-date. Please update all submodules with\ngit submodule update --init --recursive --force\nor run cmake with -DMANUAL_SUBMODULES=1\n")
-      endif()
-    endfunction ()
-
-    message(STATUS "Checking submodules")
-    check_submodule(libraries/fc)
-  endif()
-endif()
-# Make sure to always re-run the test.
-unset( MANUAL_SUBMODULES CACHE )
-
-# Fortify source
-if (CMAKE_COMPILER_IS_GNUCXX)
-	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		message (STATUS "Setting optimizations for clang++")
-		set(CMAKE_CXX_FLAGS_RELEASE "-D_FORTIFY_SOURCE=2 -O3 -DNDEBUG=1")
-		set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -O3 -DNDEBUG=1 -g")
-
-		# check and add data execution prevention
-		message (STATUS "Enabling data execution prevention")
-		add_linker_flag("-fsanitize=safe-stack")
-
-		# check and add Stack-based buffer overrun detection
-		set(CMAKE_REQUIRED_FLAGS "-fstack-protector")
-		check_c_compiler_flag("" HAVE_STACKPROTECTOR)
-		if(HAVE_STACKPROTECTOR)
-			message (STATUS "Enabling stack-based buffer overrun detection")
-			add_flag_append(CMAKE_C_FLAGS "-fstack-protector")
-			add_flag_append(CMAKE_CXX_FLAGS "-fstack-protector")
-		endif()
-	else ()
-		message (STATUS "Setting optimizations for g++")
-		set(CMAKE_CXX_FLAGS_RELEASE "-D_FORTIFY_SOURCE=2 -O3 -DNDEBUG=1")
-		set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -O3 -DNDEBUG=1 -g")
-
-		# check and add data execution prevention
-		set(CMAKE_REQUIRED_FLAGS "-Wl,-znoexecstack")
-		check_c_compiler_flag("" HAVE_NOEXECSTACK)
-		if(HAVE_NOEXECSTACK)
-			message (STATUS "Enabling data execution prevention")
-			add_linker_flag("-znoexecstack")
-		endif()
-
-		# check and add Stack-based buffer overrun detection
-		set(CMAKE_REQUIRED_FLAGS "-fstack-protector-strong")
-		check_c_compiler_flag("" HAVE_STACKPROTECTOR)
-		if(HAVE_STACKPROTECTOR)
-			message (STATUS "Enabling stack-based buffer overrun detection")
-			add_flag_append(CMAKE_C_FLAGS "-fstack-protector-strong")
-			add_flag_append(CMAKE_CXX_FLAGS "-fstack-protector-strong")
-		endif()
-
-	endif ()
-endif ()
-
-# check for Data relocation and Protection (RELRO)
-set(CMAKE_REQUIRED_FLAGS "-Wl,-zrelro,-znow")
-check_c_compiler_flag("" HAVE_RELROFULL)
-if(HAVE_RELROFULL)
-	message (STATUS "Enabling full data relocation and protection")
-	add_linker_flag("-zrelro")
-	add_linker_flag("-znow")
-else()
-	#if full relro is not available, try partial relro
-	set(CMAKE_REQUIRED_FLAGS "-Wl,-zrelro")
-	check_c_compiler_flag("" HAVE_RELROPARTIAL)
-	if(HAVE_RELROPARTIAL)
-		message (STATUS "Enabling partial data relocation and protection")
-		add_linker_flag("-zrelro")
-	endif()
-endif()
 
 set(CMAKE_REQUIRED_FLAGS ${TEMP_REQUIRED_FLAGS} )
 
@@ -182,8 +100,8 @@ option(USE_PROFILER "Build with GPROF support(Linux)." OFF)
 set(Boost_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/fc/CMakeModules/Boost")
 
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libraries/fc/GitVersionGen" )
-include( GetGitRevisionDescription )
-get_git_head_revision( GIT_REFSPEC GIT_SHA2 )
+#include( GetGitRevisionDescription )
+#get_git_head_revision( GIT_REFSPEC GIT_SHA2 )
 
 SET(BOOST_COMPONENTS)
 LIST(APPEND BOOST_COMPONENTS thread
@@ -220,22 +138,9 @@ ENDIF(WIN32)
 
 FIND_PACKAGE(Boost CONFIG REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
-# enforce more strict compiler warnings and errors
-add_compiler_flag_if_available("-Wall")
-add_compiler_flag_if_available("-Wclobbered")
-add_compiler_flag_if_available("-Wempty-body")
-add_compiler_flag_if_available("-Wformat-security")
-add_compiler_flag_if_available("-Wignored-qualifiers")
-add_compiler_flag_if_available("-Wimplicit-fallthrough=5")
-add_compiler_flag_if_available("-Wmissing-field-initializers")
-add_compiler_flag_if_available("-Wpointer-arith")
-add_compiler_flag_if_available("-Wshift-negative-value")
-add_compiler_flag_if_available("-Wtype-limits")
-add_compiler_flag_if_available("-Wunused-but-set-parameter")
-
 if( WIN32 )
 
-    message( STATUS "Configuring R-Squared on WIN32")
+    message( STATUS "Configuring AcloudBank on WIN32")
 
     if ( MINGW )
         message( STATUS "Windows build using MinGW" )
@@ -260,15 +165,15 @@ else( WIN32 ) # Apple AND Linux
 
     if( APPLE )
         # Apple Specific Options Here
-        message( STATUS "Configuring R-Squared on OS X" )
+        message( STATUS "Configuring AcloudBank on OS X" )
         set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++ -Wall -fvisibility-inlines-hidden -fvisibility=hidden" )
     else( APPLE )
         if ( "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD" )
             # OpenBSD Specific Options
-            message( STATUS "Configuring R-Squared on OpenBSD" )
+            message( STATUS "Configuring AcloudBank on OpenBSD" )
         else()
             # Linux Specific Options Here
-            message( STATUS "Configuring R-Squared on Linux" )
+            message( STATUS "Configuring AcloudBank on Linux" )
             set( rt_library rt )
         endif()
         # Common Linux & OpenBSD Options
@@ -308,7 +213,7 @@ if ( NOT MSVC AND FULL_STATIC_BUILD )
     set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libstdc++ -static-libgcc" )
 endif ( NOT MSVC AND FULL_STATIC_BUILD )
 
-set(ENABLE_COVERAGE_TESTING FALSE CACHE BOOL "Build R-Squared for code coverage analysis")
+set(ENABLE_COVERAGE_TESTING FALSE CACHE BOOL "Build AcloudBank for code coverage analysis")
 
 if(ENABLE_COVERAGE_TESTING)
     SET(CMAKE_CXX_FLAGS "--coverage ${CMAKE_CXX_FLAGS}")
@@ -338,18 +243,18 @@ set(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-set(CPACK_PACKAGE_DESCRIPTION "A client for the R-Squared network")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A client for the R-Squared network")
+set(CPACK_PACKAGE_DESCRIPTION "A client for the AcloudBank network")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A client for the AcloudBank network")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "R-Squared ${CPACK_PACKAGE_VERSION}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "AcloudBank ${CPACK_PACKAGE_VERSION}")
 
 if(WIN32)
  SET(CPACK_GENERATOR "ZIP;NSIS")
- set(CPACK_PACKAGE_NAME "R-Squared") # override above
+ set(CPACK_PACKAGE_NAME "AcloudBank") # override above
  set(CPACK_NSIS_EXECUTABLES_DIRECTORY .)
- set(CPACK_NSIS_PACKAGE_NAME "R-Squared v${CPACK_PACKAGE_VERSION}")
+ set(CPACK_NSIS_PACKAGE_NAME "AcloudBank v${CPACK_PACKAGE_VERSION}")
  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_PACKAGE_NAME}")
- set(CPACK_NSIS_DEFINES "  !define MUI_STARTMENUPAGE_DEFAULTFOLDER \\\"R-Squared\\\"")
+ set(CPACK_NSIS_DEFINES "  !define MUI_STARTMENUPAGE_DEFAULTFOLDER \\\"AcloudBank\\\"")
  # it seems like windows zip files usually don't have a single directory inside them, unix tgz frequently do
  SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 

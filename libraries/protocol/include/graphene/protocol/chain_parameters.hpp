@@ -25,6 +25,16 @@ namespace graphene { namespace protocol {
       uint32_t max_custom_authority_restrictions = GRAPHENE_DEFAULT_MAX_CUSTOM_AUTHORITY_RESTRICTIONS;
    };
 
+struct parameter_extension
+   {
+   /* rbac parameters */
+      optional < uint16_t >           rbac_max_permissions_per_account    = RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
+      optional < uint32_t >           rbac_max_account_authority_lifetime = RBAC_MAX_ACCOUNT_AUTHORITY_LIFETIME;
+      optional < uint16_t >           rbac_max_authorities_per_permission = RBAC_MAX_AUTHS_PER_PERMISSION;
+      /* Account Roles - Permissions Parameters */
+      optional < uint16_t >           account_roles_max_per_account    = ACCOUNT_ROLES_MAX_PER_ACCOUNT;
+      optional < uint32_t >           account_roles_max_lifetime       = ACCOUNT_ROLES_MAX_LIFETIME;
+   };
    struct chain_parameters
    {
       /** using a shared_ptr breaks the circular dependency created between operations and the fee schedule */
@@ -70,6 +80,7 @@ namespace graphene { namespace protocol {
          optional< uint16_t > maker_fee_discount_percent;
          optional< uint16_t > electoral_threshold;
       };
+      extension<parameter_extension> extensionss;
 
       extension<ext> extensions;
 
@@ -90,17 +101,22 @@ namespace graphene { namespace protocol {
       /// If @ref electoral_threshold is valid, return the value it contains, otherwise return 0
       uint16_t get_electoral_threshold() const;
 
-      private:
       static void safe_copy(chain_parameters& to, const chain_parameters& from);
 
-      inline uint16_t rbac_max_permissions_per_account()const {
-         return extensions.value.rbac_max_permissions_per_account.valid() ? *extensions.value.rbac_max_permissions_per_account : RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
+      inline uint16_t rbac_max_permissions_per_account() const {
+         return extensionss.value.rbac_max_permissions_per_account.valid() ? *extensionss.value.rbac_max_permissions_per_account : RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
       }
-      inline uint32_t rbac_max_account_authority_lifetime()const {
-         return extensions.value.rbac_max_account_authority_lifetime.valid() ? *extensions.value.rbac_max_account_authority_lifetime : RBAC_MAX_ACCOUNT_AUTHORITY_LIFETIME;
+      inline uint32_t rbac_max_account_authority_lifetime() const {
+         return extensionss.value.rbac_max_account_authority_lifetime.valid() ? *extensionss.value.rbac_max_account_authority_lifetime : RBAC_MAX_ACCOUNT_AUTHORITY_LIFETIME;
       }
-      inline uint16_t rbac_max_authorities_per_permission()const {
-         return extensions.value.rbac_max_authorities_per_permission.valid() ? *extensions.value.rbac_max_authorities_per_permission : RBAC_MAX_AUTHS_PER_PERMISSION;
+      inline uint16_t rbac_max_authorities_per_permission() const {
+         return extensionss.value.rbac_max_authorities_per_permission.valid() ? *extensionss.value.rbac_max_authorities_per_permission : RBAC_MAX_AUTHS_PER_PERMISSION;
+      }
+      inline uint16_t account_roles_max_per_account() const {
+         return extensionss.value.account_roles_max_per_account.valid() ? *extensionss.value.account_roles_max_per_account : ACCOUNT_ROLES_MAX_PER_ACCOUNT;
+      }
+      inline uint32_t account_roles_max_lifetime() const {
+         return extensionss.value.account_roles_max_lifetime.valid() ? *extensionss.value.account_roles_max_lifetime : ACCOUNT_ROLES_MAX_LIFETIME;
       }
    };
 
@@ -125,6 +141,14 @@ FC_REFLECT( graphene::protocol::chain_parameters::ext,
       (market_fee_network_percent)
       (maker_fee_discount_percent)
       (electoral_threshold)
+)
+
+FC_REFLECT( graphene::protocol::parameter_extension,
+   (rbac_max_permissions_per_account)
+   (rbac_max_account_authority_lifetime)
+   (rbac_max_authorities_per_permission)
+   (account_roles_max_per_account)
+   (account_roles_max_lifetime)
 )
 
 FC_REFLECT( graphene::protocol::chain_parameters,
@@ -157,9 +181,7 @@ FC_REFLECT( graphene::protocol::chain_parameters,
             (rsquared_witnesses_top_max)
             (rsquared_witnesses_active_max)
             (extensions)
-            (rbac_max_permissions_per_account)
-            (rbac_max_account_authority_lifetime)
-            (rbac_max_authorities_per_permission)
+            (extensionss)
           )
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::protocol::chain_parameters )
