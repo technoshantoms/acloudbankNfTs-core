@@ -43,6 +43,7 @@
 #include <graphene/chain/nft_evaluator.hpp>
 
 #include <graphene/chain/nft_lottery_evaluator.hpp>
+#include <graphene/chain/lottery_evaluator.hpp>
 
 #include <graphene/chain/tnt/object.hpp>
 #include <graphene/chain/personal_data_object.hpp>
@@ -182,9 +183,12 @@ void database::initialize_evaluators()
    register_evaluator<account_role_create_evaluator>();
    register_evaluator<account_role_update_evaluator>();
    register_evaluator<account_role_delete_evaluator>();
+   register_consensus_evaluator<lottery_asset_create_evaluator>();
    register_evaluator<nft_lottery_token_purchase_evaluator>();
    register_evaluator<nft_lottery_reward_evaluator>();
    register_evaluator<nft_lottery_end_evaluator>();
+   register_consensus_evaluator<lottery_reward_evaluator>();
+   register_consensus_evaluator<lottery_end_evaluator>();
 }
 
 void database::initialize_indexes()
@@ -220,7 +224,10 @@ void database::initialize_indexes()
 
    add_index< primary_index<nft_metadata_index > >();
    add_index< primary_index<nft_index > >();
+   add_index< primary_index<account_role_index> >();
 
+   add_index< primary_index<lottery_balance_index                         > >();
+   add_index< primary_index<sweeps_vesting_balance_index                  > >();
    add_index< primary_index<offer_history_index                           > >();
    add_index< primary_index<nft_lottery_balance_index                     > >();
 
