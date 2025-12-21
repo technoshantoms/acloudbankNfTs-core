@@ -239,6 +239,12 @@ namespace graphene { namespace chain {
 
          void update_witness_schedule();
 
+
+
+         void check_lottery_end_by_participants( asset_id_type asset_id );
+         void check_ending_lotteries();
+         void check_ending_nft_lotteries();
+
          //////////////////// db_commit_reveal.cpp ////////////////////
       private:
          uint64_t get_commit_reveal_seed(const vector<account_id_type>& accounts) const;
@@ -306,6 +312,23 @@ namespace graphene { namespace chain {
          asset get_balance(account_id_type owner, asset_id_type asset_id)const;
          /// This is an overloaded method.
          asset get_balance(const account_object& owner, const asset_object& asset_obj)const;
+
+         /**
+          * @brief Get balance connected with lottery asset; if assset isnt lottery - return asset(0, 0)
+          */
+         asset get_balance(asset_id_type lottery_id)const;
+         /**
+          * @brief Adjust a particular account's balance in a given asset by a delta
+          * @param account ID of account whose balance should be adjusted
+          * @param delta Asset ID and amount to adjust balance by
+          */
+         void adjust_balance(account_id_type account, asset delta);
+         /**
+          * @brief Adjust a lottery's balance in a given asset by a delta
+          * @param asset ID(should be lottery) balance should be adjusted
+          * @param delta Asset ID and amount to adjust balance by
+          */
+         void adjust_balance(asset_id_type lottery_id, asset delta);
 
          /**
           * @brief Adjust a particular account's balance in a given asset by a delta

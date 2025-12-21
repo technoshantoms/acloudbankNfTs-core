@@ -1,26 +1,5 @@
 /*
- * Copyright (c) 2015 Cryptonomex, Inc., and contributors.
- * Copyright (c) 2020-2023 Revolution Populi Limited, and contributors.
- *
- * The MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * acloudbank
  */
 #include <graphene/chain/asset_object.hpp>
 #include <graphene/chain/database.hpp>
@@ -120,6 +99,144 @@ void graphene::chain::asset_bitasset_data_object::update_median_feeds( time_poin
    // Note: perhaps can defer updating current_maintenance_collateralization for better performance
    // update data derived from MCR, ICR and etc
    refresh_cache();
+}
+
+time_point_sec asset_object::get_lottery_expiration() const 
+{
+   if( lottery_options )
+      return lottery_options->end_date;
+   return time_point_sec();
+}
+
+vector<uint64_t> asset_object::get_ticket_ids( database& db ) const
+{
+   auto& asset_bal_idx = db.get_index_type< account_balance_index >().indices().get< by_asset_balance >();
+   vector<uint64_t> ids;
+   const auto range = asset_bal_idx.equal_range( boost::make_tuple( get_id() ) );
+
+   for( const account_balance_object& bal : boost::make_iterator_range( range.first, range.second ) )
+   {
+      const auto& stats = bal.owner(db).statistics(db);
+      const account_transaction_history_object* ath = static_cast<const account_transaction_history_object*>(&stats.most_recent_op(db));
+      for( uint64_t balance = bal.balance.value; balance > 0;)
+      {
+         if(ath != nullptr)
+         {
+            const operation_history_object& oho = db.get<operation_history_object>( ath->operation_id );
+            if( oho.op.which() == operation::tag<ticket_purchase_operation>::value && get_id() == oho.op.get<ticket_purchase_operation>().lottery)
+            {
+               uint64_t tickets_count = oho.op.get<ticket_purchase_operation>().tickets_to_buy;
+               ids.insert(ids.end(), tickets_count, oho.id.instance());
+               balance -= tickets_count;
+               assert(balance >= 0);
+            }
+
+            if( ath->next == account_transaction_history_id_type() )
+            {
+               ath = nullptr;
+               break;
+            }
+            else ath = db.find(ath->next);
+         }
+      }
+   }
+   return ids;
+}
+
+void asset_object::distribute_benefactors_part( database& db )
+{
+   transaction_evaluation_state eval( &db );
+   uint64_t jackpot = get_id()( db ).dynamic_data( db ).current_supply.value * lottery_options->ticket_price.amount.value;
+   
+   for( auto benefactor : lottery_options->benefactors ) {
+      lottery_reward_operation reward_op;
+      reward_op.lottery = get_id();
+      reward_op.winner = benefactor.id;
+      reward_op.is_benefactor_reward = true;
+      reward_op.win_percentage = benefactor.share;
+      reward_op.amount = asset( jackpot * benefactor.share / GRAPHENE_100_PERCENT, db.get_balance(id).asset_id );
+      db.apply_operation(eval, reward_op);
+   }
+}
+
+
+map< account_id_type, vector< uint16_t > > asset_object::distribute_winners_part( database& db )
+{
+   transaction_evaluation_state eval( &db );
+      
+   auto holders = get_holders( db );
+   vector<uint64_t> ticket_ids = get_ticket_ids(db);
+   FC_ASSERT( dynamic_data( db ).current_supply == holders.size() );
+   map<account_id_type, vector<uint16_t> > structurized_participants;
+   for( account_id_type holder : holders )
+   {
+      if( !structurized_participants.count( holder ) )
+         structurized_participants.emplace( holder, vector< uint16_t >() );
+   }
+   uint64_t jackpot = get_id()( db ).dynamic_data( db ).current_supply.value * lottery_options->ticket_price.amount.value;
+   auto winner_numbers = db.get_winner_numbers( get_id(), holders.size(), lottery_options->winning_tickets.size() );
+   
+   auto& tickets( lottery_options->winning_tickets );
+   
+   if( holders.size() < tickets.size() ) {
+      uint16_t percents_to_distribute = 0;
+      for( auto i = tickets.begin() + holders.size(); i != tickets.end(); ) {
+         percents_to_distribute += *i;
+         i = tickets.erase(i);
+      }
+      for( auto t = tickets.begin(); t != tickets.begin() + holders.size(); ++t )
+         *t += percents_to_distribute / holders.size();
+   }
+   auto sweeps_distribution_percentage = db.get_global_properties().parameters.sweeps_distribution_percentage();
+   for( size_t c = 0; c < winner_numbers.size(); ++c ) {
+      auto winner_num = winner_numbers[c];
+      lottery_reward_operation reward_op;
+      reward_op.lottery = get_id();
+      reward_op.is_benefactor_reward = false;
+      reward_op.winner = holders[winner_num];
+      if(db.head_block_time() > HARDFORK_5050_1_TIME && ticket_ids.size() > winner_num)
+      {
+         const static_variant<uint64_t, void_t> tkt_id = ticket_ids[winner_num];
+         reward_op.winner_ticket_id = tkt_id;
+      }
+      reward_op.win_percentage = tickets[c];
+      reward_op.amount = asset( jackpot * tickets[c] * ( 1. - sweeps_distribution_percentage / (double)GRAPHENE_100_PERCENT ) / GRAPHENE_100_PERCENT , db.get_balance(id).asset_id );
+      db.apply_operation(eval, reward_op);
+      
+      structurized_participants[ holders[ winner_num ] ].push_back( tickets[c] );
+   }
+   return structurized_participants;
+}
+
+void asset_object::end_lottery( database& db )
+{
+   transaction_evaluation_state eval(&db);
+   
+   FC_ASSERT( is_lottery() );
+   FC_ASSERT( lottery_options->is_active && ( lottery_options->end_date <= db.head_block_time() || lottery_options->ending_on_soldout ) );
+
+   auto participants = distribute_winners_part( db );
+   if( participants.size() > 0) {
+      distribute_benefactors_part( db );
+      distribute_sweeps_holders_part( db );
+   }
+   
+   lottery_end_operation end_op;
+   end_op.lottery = id;
+   end_op.participants = participants;
+   db.apply_operation(eval, end_op);
+}
+
+void lottery_balance_object::adjust_balance( const asset& delta )
+{
+   FC_ASSERT( delta.asset_id == balance.asset_id );
+   balance += delta;
+}
+
+void sweeps_vesting_balance_object::adjust_balance( const asset& delta )
+{
+   FC_ASSERT( delta.asset_id == asset_id );
+   balance += delta.amount.value;
 }
 
   //  if(db.head_block_time() > HARDFORK_5050_1_TIME && ticket_ids.size() > winner_num) // for nft... rework
@@ -234,3 +351,5 @@ GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::price_feed_with_icr 
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_object )
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_bitasset_data_object )
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_dynamic_data_object )
+GRAPHENE_EXTERNAL_SERIALIZATION( graphene::chain::lottery_balance_object )
+GRAPHENE_EXTERNAL_SERIALIZATION( graphene::chain::sweeps_vesting_balance_object )

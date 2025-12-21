@@ -86,6 +86,9 @@ namespace graphene { namespace chain {
          /// @return true if symbol is a valid ticker symbol; false otherwise.
          static bool is_valid_symbol( const string& symbol );
 
+         /// @return true if this is lottery asset; false otherwise.
+         bool is_lottery()const { return lottery_options.valid(); }
+
          /// @return true if this is a market-issued asset; false otherwise.
          bool is_market_issued()const { return bitasset_data_id.valid(); }
          /// @return true if users may request force-settlement of this market-issued asset; false otherwise
@@ -135,6 +138,15 @@ namespace graphene { namespace chain {
 
          asset_options options;
 
+       // Extra data associated with lottery options. This field is non-null if is_lottery() returns true
+         optional<lottery_asset_options> lottery_options;
+         time_point_sec get_lottery_expiration() const;
+         vector<account_id_type> get_holders( database& db ) const;
+         vector<uint64_t> get_ticket_ids( database& db ) const;
+         void distribute_benefactors_part( database& db );
+         map< account_id_type, vector< uint16_t > > distribute_winners_part( database& db );
+         void distribute_sweeps_holders_part( database& db );
+         void end_lottery( database& db );
 
          /// Current supply, fee pool, and collected fees are stored in a separate object as they change frequently.
          asset_dynamic_data_id_type  dynamic_asset_data_id;
@@ -375,23 +387,63 @@ namespace graphene { namespace chain {
    > asset_bitasset_data_object_multi_index_type;
    typedef generic_index<asset_bitasset_data_object, asset_bitasset_data_object_multi_index_type> asset_bitasset_data_index;
 
-   struct by_symbol;
+
+   // used to sort active_lotteries index
+   struct lottery_asset_comparer
+   {
+      bool operator()(const asset_object& lhs, const asset_object& rhs) const
+      {
+         if ( !lhs.is_lottery() ) return false;
+         if ( !lhs.lottery_options->is_active && !rhs.is_lottery()) return true; // not active lotteries first, just assets then
+         if ( !lhs.lottery_options->is_active ) return false;
+         if ( lhs.lottery_options->is_active && ( !rhs.is_lottery() || !rhs.lottery_options->is_active ) ) return true;
+         return lhs.get_lottery_expiration() > rhs.get_lottery_expiration();
+      }
+   };
+
+    struct by_symbol;
    struct by_type;
    struct by_issuer;
+   struct active_lotteries;
+   struct by_lottery;
+   struct by_lottery_owner;
    typedef multi_index_container<
       asset_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
          ordered_unique< tag<by_symbol>, member<asset_object, string, &asset_object::symbol> >,
+         ordered_non_unique< tag<by_issuer>, member<asset_object, account_id_type, &asset_object::issuer > >,
+         ordered_non_unique< tag<active_lotteries>,
+            identity< asset_object >,
+            lottery_asset_comparer
+         >,
+         ordered_unique< tag<by_lottery>,
+            composite_key<
+               asset_object,
+               const_mem_fun<asset_object, bool, &asset_object::is_lottery>,
+               member<object, object_id_type, &object::id>
+            >,
+            composite_key_compare<
+               std::greater< bool >,
+               std::greater< object_id_type >
+            >
+         >,
+         ordered_unique< tag<by_lottery_owner>,
+            composite_key<
+               asset_object,
+               const_mem_fun<asset_object, bool, &asset_object::is_lottery>,
+               const_mem_fun<asset_object, uint32_t, &asset_object::get_issuer_num>,
+               member<object, object_id_type, &object::id>
+            >,
+            composite_key_compare<
+               std::greater< bool >,
+               std::greater< uint32_t >,
+               std::greater< object_id_type >
+            >
+         >,
          ordered_unique< tag<by_type>,
             composite_key< asset_object,
                 const_mem_fun<asset_object, bool, &asset_object::is_market_issued>,
-                member< object, object_id_type, &object::id >
-            >
-         >,
-         ordered_unique< tag<by_issuer>,
-            composite_key< asset_object,
-                member< asset_object, account_id_type, &asset_object::issuer >,
                 member< object, object_id_type, &object::id >
             >
          >
@@ -399,20 +451,67 @@ namespace graphene { namespace chain {
    > asset_object_multi_index_type;
    typedef generic_index<asset_object, asset_object_multi_index_type> asset_index;
 
+   /**
+    * @ingroup object
+    */
+   class lottery_balance_object : public abstract_object<lottery_balance_object>
+   {
+      public:
+         static const uint8_t space_id = implementation_ids;
+         static const uint8_t type_id  = impl_lottery_balance_object_type;
+
+         asset_id_type  lottery_id;
+         asset          balance;
+
+         asset get_balance()const { return balance; }
+         void  adjust_balance(const asset& delta);
+   };
+
+   struct by_owner;
+
+   /**
+    * @ingroup object_index
+    */
+   typedef multi_index_container<
+      lottery_balance_object,
+      indexed_by<
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
+         ordered_non_unique< tag<by_owner>,
+            member<lottery_balance_object, asset_id_type, &lottery_balance_object::lottery_id>
+         >
+      >
+   > lottery_balance_index_type;
+
+   /**
+    * @ingroup object_index
+    */
+   typedef generic_index<lottery_balance_object, lottery_balance_index_type> lottery_balance_index;
+
+
+
 } } // graphene::chain
 
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_dynamic_data_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_bitasset_data_object)
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_dividend_data_object)
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::total_distributed_dividend_balance_object)
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::lottery_balance_object)
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::sweeps_vesting_balance_object)
 
 FC_REFLECT_DERIVED( graphene::chain::price_feed_with_icr, (graphene::protocol::price_feed),
                     (initial_collateral_ratio) )
+
+FC_REFLECT_DERIVED( graphene::chain::lottery_balance_object, (graphene::db::object),
+                    (lottery_id)(balance) )
+
 
 FC_REFLECT_DERIVED( graphene::chain::asset_object, (graphene::db::object),
                     (symbol)
                     (precision)
                     (issuer)
                     (options)
+                    (lottery_options)
                     (dynamic_asset_data_id)
                     (bitasset_data_id)
                     (buyback_account)
@@ -422,7 +521,7 @@ FC_REFLECT_TYPENAME( graphene::chain::asset_bitasset_data_object )
 FC_REFLECT_TYPENAME( graphene::chain::asset_dynamic_data_object )
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::price_feed_with_icr )
-
+GRAPHENE_EXTERNAL_SERIALIZATION(graphene::chain::lottery_balance_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_bitasset_data_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_dynamic_data_object )

@@ -20,6 +20,20 @@ namespace graphene { namespace protocol {
 
    bool is_valid_symbol( const string& symbol );
 
+   struct lottery_asset_options
+   {
+      std::vector<benefactor> benefactors;
+      asset_id_type           owner;
+      // specifying winning tickets as shares that will be issued
+      std::vector<uint16_t>   winning_tickets;
+      asset                   ticket_price;
+      time_point_sec          end_date;
+      bool                    ending_on_soldout;
+      bool                    is_active;
+
+      void validate()const;
+   };
+
    /**
     * @brief The asset_options struct contains options available on all assets in the network
     *
@@ -196,11 +210,48 @@ namespace graphene { namespace protocol {
       optional<bitasset_options> bitasset_opts;
       /// For BitAssets, set this to true if the asset implements a prediction market; false otherwise
       bool is_prediction_market = false;
+      // containing lottery_asset_options now
       extensions_type extensions;
 
       account_id_type fee_payer()const { return issuer; }
       void            validate()const;
       share_type      calculate_fee( const fee_parameters_type& k, optional<uint64_t> sub_asset_creation_fee )const;
+   };
+
+
+///Operation for creation of lottery
+   struct lottery_asset_create_operation : public base_operation
+   {
+      struct fee_parameters_type {
+         uint64_t lottery_asset  = 20   * GRAPHENE_BLOCKCHAIN_PRECISION;
+         uint32_t price_per_kbyte = 10; /// only required for large lottery names.
+      };
+
+      asset                   fee;
+      /// This account must sign and pay the fee for this operation. Later, this account may update the asset
+      account_id_type         issuer;
+      /// The ticker symbol of this asset
+      string                  symbol;
+      /// Number of digits to the right of decimal point, must be less than or equal to 12
+      uint8_t                 precision = 0;
+
+      /// Options common to all assets.
+      ///
+      /// @note common_options.core_exchange_rate technically needs to store the asset ID of this new asset. Since this
+      /// ID is not known at the time this operation is created, create this price as though the new asset has instance
+      /// ID 1, and the chain will overwrite it with the new asset's ID.
+      asset_options              common_options;
+      /// Options only available for BitAssets. MUST be non-null if and only if the @ref market_issued flag is set in
+      /// common_options.flags
+      optional<bitasset_options> bitasset_opts;
+      /// For BitAssets, set this to true if the asset implements a @ref prediction_market; false otherwise
+      bool is_prediction_market = false;
+      // containing lottery_asset_options now
+      lottery_asset_options extensions;
+
+      account_id_type fee_payer()const { return issuer; }
+      void            validate()const;
+      share_type      calculate_fee( const fee_parameters_type& k )const;
    };
 
    /**
@@ -631,7 +682,8 @@ FC_REFLECT( graphene::protocol::bitasset_options,
             (short_backing_asset)
             (extensions)
           )
-
+FC_REFLECT( graphene::protocol::lottery_asset_options, (benefactors)(owner)(winning_tickets)(ticket_price)(end_date)(ending_on_soldout)(is_active) )
+FC_REFLECT( graphene::protocol::lottery_asset_create_operation::fee_parameters_type, (lottery_asset)(price_per_kbyte) )
 FC_REFLECT( graphene::protocol::additional_asset_options,
             (reward_percent)(whitelist_market_fee_sharing)(taker_fee_percent) )
 
@@ -655,6 +707,17 @@ FC_REFLECT( graphene::protocol::asset_reserve_operation::fee_parameters_type, (f
 
 
 FC_REFLECT( graphene::protocol::asset_create_operation,
+            (fee)
+            (issuer)
+            (symbol)
+            (precision)
+            (common_options)
+            (bitasset_opts)
+            (is_prediction_market)
+            (extensions)
+          )
+
+FC_REFLECT( graphene::protocol::lottery_asset_create_operation,
             (fee)
             (issuer)
             (symbol)
