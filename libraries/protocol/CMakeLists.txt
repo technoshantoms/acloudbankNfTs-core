@@ -28,16 +28,10 @@ list(APPEND SOURCES account.cpp
                     operations.cpp
                     pts_address.cpp
                     small_ops.cpp
-                    custom_permission.cpp
-                    custom_account_authority.cpp
-                    offer.cpp
-                    nft.cpp
-                    nft_lottery.cpp
-                    account_role.cpp
                     transaction.cpp
                     types.cpp
                     withdraw_permission.cpp
-                    offer.cpp
+                    lottery_ops.cpp
                     worker.cpp
                     personal_data.cpp
                     content_card.cpp
@@ -48,12 +42,12 @@ list(APPEND SOURCES account.cpp
                     tnt/lookups.cpp
                     tnt/validation.cpp
                     tnt/operations.cpp
-                    custom_account_authority.cpp                    
                     custom_permission.cpp
+                    custom_account_authority.cpp
                     offer.cpp
                     nft.cpp
                     nft_lottery.cpp
-                    account_role.cpp 
+                    account_role.cpp
                     )
 
 

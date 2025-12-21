@@ -16,7 +16,7 @@ namespace graphene
             {
                 int first_allowed_op = operation::tag<custom_permission_create_operation>::value;
                 switch (op_type)
-                { 
+                {
                 case operation::tag<custom_permission_create_operation>::value:
                 case operation::tag<custom_permission_update_operation>::value:
                 case operation::tag<custom_permission_delete_operation>::value:
