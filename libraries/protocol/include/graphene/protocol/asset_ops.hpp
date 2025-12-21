@@ -19,6 +19,14 @@ namespace graphene { namespace protocol {
    typedef extension<additional_asset_options> additional_asset_options_t;
 
    bool is_valid_symbol( const string& symbol );
+   
+    struct benefactor   {
+      account_id_type id;
+      uint16_t share; // percent * GRAPHENE_1_PERCENT
+      benefactor() = default;
+      benefactor( const benefactor & ) = default;
+      benefactor( account_id_type _id, uint16_t _share ) : id( _id ), share( _share ) {}
+   };
 
    struct lottery_asset_options
    {
