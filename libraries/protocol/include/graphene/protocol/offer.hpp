@@ -14,7 +14,7 @@ namespace graphene
  *  @ingroup operations
  * operation
  */
-      struct offer_operation : public base_operation
+      struct offer_operation : public graphene::protocol::base_operation
       {
          struct fee_parameters_type
          {
@@ -51,7 +51,7 @@ namespace graphene
          share_type calculate_fee(const fee_parameters_type &k) const;
       };
 
-      struct bid_operation : public base_operation
+      struct bid_operation : public graphene::protocol::base_operation
       {
          struct fee_parameters_type
          {
@@ -71,7 +71,7 @@ namespace graphene
          share_type calculate_fee(const fee_parameters_type &k) const;
       };
 
-      struct cancel_offer_operation : public base_operation
+      struct cancel_offer_operation : public graphene::protocol::base_operation
       {
          struct fee_parameters_type
          {
@@ -97,7 +97,7 @@ namespace graphene
          Cancelled = 2
       };
 
-      struct finalize_offer_operation : public base_operation
+      struct finalize_offer_operation : public graphene::protocol::base_operation
       {
          struct fee_parameters_type
          {

@@ -39,7 +39,7 @@ struct nft_lottery_token_purchase_operation : public graphene::protocol::base_op
 /**
  * @brief Operation to reward a winner in an NFT lottery.
  */
-struct nft_lottery_reward_operation : public graphene::protocol::base_operation  {
+struct nft_lottery_reward_operation : public graphene::protocol::base_operation {
     using fee_parameters_type = operation_fee_parameters;
 
     asset fee;
@@ -68,8 +68,7 @@ struct nft_lottery_reward_operation : public graphene::protocol::base_operation 
 /**
  * @brief Operation to finalize and end an NFT lottery.
  */
-struct nft_lottery_end_operation : public graphene::protocol::base_operation 
- {
+struct nft_lottery_end_operation : public graphene::protocol::base_operation {
     using fee_parameters_type = operation_fee_parameters;
 
     asset fee;
