@@ -257,16 +257,13 @@ namespace graphene { namespace protocol {
 
       /// Whether the parameters that affect margin calls in this price feed object are the same as the parameters
       /// in the passed-in object
-      bool margin_call_params_equal( const price_feed& b ) const
+      bool margin_call_params_equal( const price_feed& b ) const;
 
       friend bool operator == ( const price_feed& a, const price_feed& b )
       {
-         if( this == &b )
-            return true;
-         return std::tie(   settlement_price,   maintenance_collateral_ratio,   maximum_short_squeeze_ratio ) ==
+         return std::tie( a.settlement_price, a.maintenance_collateral_ratio, a.maximum_short_squeeze_ratio ) ==
                 std::tie( b.settlement_price, b.maintenance_collateral_ratio, b.maximum_short_squeeze_ratio );
       }
-      ///@}
 
       void validate() const;
       bool is_for( asset_id_type asset_id ) const;

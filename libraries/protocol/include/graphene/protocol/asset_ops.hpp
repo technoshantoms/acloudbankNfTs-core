@@ -585,7 +585,22 @@ namespace graphene { namespace protocol {
       account_id_type fee_payer()const { return issuer; }
       void            validate()const;
    };
+  
+  struct sweeps_vesting_claim_operation : public base_operation
+   {
+      struct fee_parameters_type {
+         uint64_t fee = 20 * GRAPHENE_BLOCKCHAIN_PRECISION;
+      };
 
+      asset           fee;
+      account_id_type account;
+      asset           amount_to_claim;
+      extensions_type extensions;
+
+
+      account_id_type fee_payer()const { return account; }
+      void            validate()const {};
+   };
    /**
     * @brief Update issuer of an asset
     * @ingroup operations
@@ -649,6 +664,9 @@ namespace graphene { namespace protocol {
    };
 
 } } // graphene::protocol
+
+FC_REFLECT( graphene::protocol::sweeps_vesting_claim_operation, (fee)(account)(amount_to_claim)(extensions) )
+FC_REFLECT( graphene::protocol::sweeps_vesting_claim_operation::fee_parameters_type, (fee) )
 
 FC_REFLECT( graphene::protocol::asset_claim_fees_operation, (fee)(issuer)(amount_to_claim)(extensions) )
 FC_REFLECT( graphene::protocol::asset_claim_fees_operation::fee_parameters_type, (fee) )

@@ -27,6 +27,10 @@ namespace graphene { namespace protocol {
 
 struct parameter_extension
    {
+
+      optional< uint16_t >            sweeps_distribution_percentage    = SWEEPS_DEFAULT_DISTRIBUTION_PERCENTAGE;
+      optional< asset_id_type >       sweeps_distribution_asset         = SWEEPS_DEFAULT_DISTRIBUTION_ASSET;
+      optional< account_id_type >     sweeps_vesting_accumulator_account= SWEEPS_ACCUMULATOR_ACCOUNT;
    /* rbac parameters */
       optional < uint16_t >           rbac_max_permissions_per_account    = RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
       optional < uint32_t >           rbac_max_account_authority_lifetime = RBAC_MAX_ACCOUNT_AUTHORITY_LIFETIME;
@@ -101,6 +105,16 @@ struct parameter_extension
       /// If @ref electoral_threshold is valid, return the value it contains, otherwise return 0
       uint16_t get_electoral_threshold() const;
 
+      inline uint16_t sweeps_distribution_percentage()const {
+         return extensionss.value.sweeps_distribution_percentage.valid() ? *extensionss.value.sweeps_distribution_percentage : SWEEPS_DEFAULT_DISTRIBUTION_PERCENTAGE;
+      }
+      inline asset_id_type sweeps_distribution_asset()const {
+         return extensionss.value.sweeps_distribution_asset.valid() ? *extensionss.value.sweeps_distribution_asset : SWEEPS_DEFAULT_DISTRIBUTION_ASSET;
+      }
+      inline account_id_type sweeps_vesting_accumulator_account()const {
+         return extensionss.value.sweeps_vesting_accumulator_account.valid() ? *extensionss.value.sweeps_vesting_accumulator_account : SWEEPS_ACCUMULATOR_ACCOUNT;
+      }
+
       static void safe_copy(chain_parameters& to, const chain_parameters& from);
 
       inline uint16_t rbac_max_permissions_per_account() const {
@@ -149,6 +163,9 @@ FC_REFLECT( graphene::protocol::parameter_extension,
    (rbac_max_authorities_per_permission)
    (account_roles_max_per_account)
    (account_roles_max_lifetime)
+   (sweeps_distribution_percentage)
+   (sweeps_distribution_asset)
+   (sweeps_vesting_accumulator_account)
 )
 
 FC_REFLECT( graphene::protocol::chain_parameters,

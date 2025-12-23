@@ -740,6 +740,10 @@ uint64_t database_api_impl::get_account_count()const
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
+// Assets
+   asset_id_type get_asset_id_from_string(const std::string &symbol_or_id) const;
+   vector<optional<asset_object>> get_assets(const vector<std::string> &asset_symbols_or_ids) const;
+
 vector<asset> database_api::get_account_balances( const std::string& account_name_or_id,
                                                   const flat_set<asset_id_type>& assets )const
 {
@@ -883,6 +887,24 @@ vector<vesting_balance_object> database_api_impl::get_vesting_balances( const st
 asset_id_type database_api::get_asset_id_from_string(const std::string& symbol_or_id)const
 {
    return my->get_asset_from_string( symbol_or_id )->id;
+}
+
+vector<optional<asset_object>> database_api::get_assets(const vector<std::string> &asset_symbols_or_ids) const {
+   return my->get_assets(asset_symbols_or_ids);
+}
+
+vector<optional<asset_object>> database_api_impl::get_assets(const vector<std::string> &asset_symbols_or_ids) const {
+   vector<optional<asset_object>> result;
+   result.reserve(asset_symbols_or_ids.size());
+   std::transform(asset_symbols_or_ids.begin(), asset_symbols_or_ids.end(), std::back_inserter(result),
+                  [this](std::string id_or_name) -> optional<asset_object> {
+                     const asset_object *asset_obj = get_asset_from_string(id_or_name, false);
+                     if (asset_obj == nullptr)
+                        return {};
+                     subscribe_to_item(asset_obj->id);
+                     return asset_object(*asset_obj);
+                  });
+   return result;
 }
 
 vector<optional<extended_asset_object>> database_api::get_assets(
