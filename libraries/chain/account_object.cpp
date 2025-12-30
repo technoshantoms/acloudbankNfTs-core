@@ -241,7 +241,34 @@ void balances_by_account_index::object_inserted( const object& obj )
    }
    balances[abo.owner.instance.value >> bits][abo.owner.instance.value & mask][abo.asset_type] = &abo;
 }
+void balances_by_account_index::object_created( const object& obj )
+{
+   const auto& abo = dynamic_cast< const account_balance_object& >( obj );
+   while( balances.size() < (abo.owner.instance.value >> bits) + 1 )
+   {
+      balances.reserve( (abo.owner.instance.value >> bits) + 1 );
+      balances.resize( balances.size() + 1 );
+      balances.back().resize( 1ULL << bits );
+   }
+   balances[abo.owner.instance.value >> bits][abo.owner.instance.value & mask][abo.asset_type] = &abo;
+}
+void account_member_index::object_created(const object& obj)
+{
+    assert( dynamic_cast<const account_object*>(&obj) ); // for debug only
+    const account_object& a = static_cast<const account_object&>(obj);
 
+    auto account_members = get_account_members(a);
+    for( auto item : account_members )
+       account_to_account_memberships[item].insert(obj.id);
+
+    auto key_members = get_key_members(a);
+    for( auto item : key_members )
+       account_to_key_memberships[item].insert(obj.id);
+
+    auto address_members = get_address_members(a);
+    for( auto item : address_members )
+       account_to_address_memberships[item].insert(obj.id);
+}
 void balances_by_account_index::object_removed( const object& obj )
 {
    const auto& abo = dynamic_cast< const account_balance_object& >( obj );
