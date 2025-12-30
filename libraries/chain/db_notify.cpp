@@ -658,6 +658,11 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
               break;
             case impl_nft_lottery_balance_object_type:
               break;
+            case impl_sweeps_vesting_balance_object_type:{
+              const auto& aobj = dynamic_cast<const sweeps_vesting_balance_object*>(obj);
+              assert( aobj != nullptr );
+              accounts.insert(aobj->owner);
+              break;
       }
    }
 } // end get_relevant_accounts( const object* obj, flat_set<account_id_type>& accounts )

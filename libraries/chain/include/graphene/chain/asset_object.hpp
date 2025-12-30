@@ -131,6 +131,7 @@ namespace graphene { namespace chain {
 
          uint32_t get_issuer_num()const
          { return issuer.instance.value; }
+
          /// Ticker symbol for this asset, i.e. "USD"
          string symbol;
          /// Maximum number of digits after the decimal point (must be <= 12)
@@ -489,15 +490,46 @@ namespace graphene { namespace chain {
     */
    typedef generic_index<lottery_balance_object, lottery_balance_index_type> lottery_balance_index;
 
+class sweeps_vesting_balance_object : public abstract_object<sweeps_vesting_balance_object>
+   {
+      public:
+         static const uint8_t space_id = implementation_ids;
+         static const uint8_t type_id  = impl_sweeps_vesting_balance_object_type;
 
+
+         account_id_type   owner;
+         uint64_t          balance;
+         asset_id_type     asset_id;
+         time_point_sec    last_claim_date;
+
+         uint64_t get_balance()const { return balance; }
+         void  adjust_balance(const asset& delta);
+         asset available_for_claim() const { return asset( balance / SWEEPS_VESTING_BALANCE_MULTIPLIER , asset_id ); }
+   };
+
+   /**
+    * @ingroup object_index
+    */
+   typedef multi_index_container<
+      sweeps_vesting_balance_object,
+      indexed_by<
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
+         ordered_non_unique< tag<by_owner>,
+            member<sweeps_vesting_balance_object, account_id_type, &sweeps_vesting_balance_object::owner>
+         >
+      >
+   > sweeps_vesting_balance_index_type;
+
+   /**
+    * @ingroup object_index
+    */
+   typedef generic_index<sweeps_vesting_balance_object, sweeps_vesting_balance_index_type> sweeps_vesting_balance_index;
 
 } } // graphene::chain
 
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_dynamic_data_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_bitasset_data_object)
-MAP_OBJECT_ID_TO_TYPE(graphene::chain::asset_dividend_data_object)
-MAP_OBJECT_ID_TO_TYPE(graphene::chain::total_distributed_dividend_balance_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::lottery_balance_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::sweeps_vesting_balance_object)
 
@@ -506,6 +538,9 @@ FC_REFLECT_DERIVED( graphene::chain::price_feed_with_icr, (graphene::protocol::p
 
 FC_REFLECT_DERIVED( graphene::chain::lottery_balance_object, (graphene::db::object),
                     (lottery_id)(balance) )
+
+FC_REFLECT_DERIVED( graphene::chain::sweeps_vesting_balance_object, (graphene::db::object),
+                    (owner)(balance)(asset_id)(last_claim_date) )
 
 
 FC_REFLECT_DERIVED( graphene::chain::asset_object, (graphene::db::object),
@@ -524,6 +559,7 @@ FC_REFLECT_TYPENAME( graphene::chain::asset_dynamic_data_object )
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::price_feed_with_icr )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION(graphene::chain::lottery_balance_object )
+GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION(graphene::chain::sweeps_vesting_balance_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_bitasset_data_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::asset_dynamic_data_object )
