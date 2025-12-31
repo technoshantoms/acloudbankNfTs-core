@@ -448,6 +448,11 @@ full_account wallet_api::get_full_account( const string& name_or_id)
     return my->_remote_db->get_full_accounts({name_or_id}, false)[name_or_id];
 }
 
+vector<account_balance_object> wallet_api::list_core_accounts()const
+{
+   return my->_remote_hist->list_core_accounts();
+}
+
 vector<bucket_object> wallet_api::get_market_history(
       string symbol1,
       string symbol2,
@@ -2043,6 +2048,24 @@ map<public_key_type, string> wallet_api::dump_private_keys()
    FC_ASSERT(!is_locked());
    return my->_keys;
 }
+
+/*std::map<string,std::function<string(fc::variant,const fc::variants&)> > m;
+m["list_core_accounts"] = [this](variant result, const fc::variants& a)
+      {
+         std::stringstream ss;
+
+         auto balances = result.as<vector<account_balance_object>>( GRAPHENE_MAX_NESTED_OBJECTS );
+         for (const account_balance_object& balance: balances)
+         {
+             const account_object& account = get_account(balance.owner);
+             //ss << account.name << " " <<  std::string(balance.id) << " " << balance.balance.value << "\n";
+             ss << account.name << " " <<  std::string(balance.id) << " " << get_asset(balance.asset_type).amount_to_pretty_string(balance.balance) << "\n";
+         }
+
+   return ss.str();
+   return m;
+};*/
+   
 
 
 signed_transaction wallet_api::update_account_keys(string name,

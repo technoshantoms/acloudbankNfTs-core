@@ -213,6 +213,7 @@ namespace graphene { namespace app {
           */
          vector<bucket_object> get_market_history( std::string a, std::string b, uint32_t bucket_seconds,
                                                    fc::time_point_sec start, fc::time_point_sec end )const;
+         vector<account_balance_object> list_core_accounts() const;
 
          /**
           * @brief Get OHLCV time bucket lengths supported (configured) by this API server

@@ -128,6 +128,8 @@ class wallet_api
      vector<operation_detail>  get_relative_account_history( const string& account_name_or_id, uint32_t stop,
                                                              uint32_t limit, uint32_t start )const;
 
+      vector<account_balance_object> list_core_accounts()const;
+
       /**
        * @brief Fetch all objects relevant to the specified account
        * @param name_or_id Must be the name or ID of an account to retrieve

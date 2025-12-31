@@ -494,9 +494,38 @@ MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_balance_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_statistics_object)
 
+FC_REFLECT_DERIVED( graphene::chain::account_object,
+                    (graphene::db::object),
+                    (membership_expiration_date)(registrar)(referrer)(lifetime_referrer)
+                    (network_fee_percentage)(lifetime_referrer_fee_percentage)(referrer_rewards_percentage)
+                    (name)(owner)(active)(options)(statistics)(whitelisting_accounts)(blacklisting_accounts)
+                    (whitelisted_accounts)(blacklisted_accounts)
+                    (cashback_vb)
+                    (owner_special_authority)(active_special_authority)
+                    (top_n_control_flags)
+                    (allowed_assets)(affiliate_distributions)
+                    )
+FC_REFLECT_DERIVED( graphene::chain::account_statistics_object,
+                    (graphene::chain::object),
+                    (owner)(name)
+                    (most_recent_op)
+                    (total_ops)(removed_ops)
+                    (total_core_in_orders)
+                    (core_in_balance)
+                    (has_cashback_vb)
+                    (is_voting)
+                    (lifetime_fees_paid)
+                    (pending_fees)(pending_vested_fees)
+                    (last_vote_time)
+                  )
+FC_REFLECT_DERIVED( graphene::chain::account_balance_object,
+                    (graphene::db::object),
+                    (owner)(asset_type)(balance)(maintenance_flag) )
+
 FC_REFLECT_TYPENAME( graphene::chain::account_object )
 FC_REFLECT_TYPENAME( graphene::chain::account_balance_object )
 FC_REFLECT_TYPENAME( graphene::chain::account_statistics_object )
+
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_balance_object )

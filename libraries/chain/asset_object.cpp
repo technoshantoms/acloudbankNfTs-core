@@ -108,6 +108,20 @@ time_point_sec asset_object::get_lottery_expiration() const
       return lottery_options->end_date;
    return time_point_sec();
 }
+vector<account_id_type> asset_object::get_holders( database& db ) const
+{
+   auto& asset_bal_idx = db.get_index_type< account_balance_index >().indices().get< by_asset_balance >();
+   
+   uint64_t max_supply = get_id()(db).options.max_supply.value;
+   
+   vector<account_id_type> holders; // repeating if balance > 1
+   holders.reserve(max_supply);
+   const auto range = asset_bal_idx.equal_range( boost::make_tuple( get_id() ) );
+   for( const account_balance_object& bal : boost::make_iterator_range( range.first, range.second ) )
+      for( uint64_t balance = bal.balance.value; balance > 0; --balance)
+         holders.push_back( bal.owner );
+   return holders;
+}
 
 vector<uint64_t> asset_object::get_ticket_ids( database& db ) const
 {
