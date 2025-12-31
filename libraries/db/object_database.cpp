@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 #include <graphene/db/object_database.hpp>
+#include <graphene/db/safety_check_policy.hpp>
 
 #include <fc/io/raw.hpp>
 #include <fc/container/flat.hpp>

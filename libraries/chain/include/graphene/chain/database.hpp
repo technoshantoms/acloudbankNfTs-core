@@ -707,6 +707,13 @@ namespace graphene { namespace chain {
          const witness_schedule_object*         _p_witness_schedule_obj    = nullptr;
          ///@}
 
+         /// Whether or not to allow safety check bypassing (for unit testing only)
+         bool _allow_safety_check_bypass;
+         /// Safety check policy for object space 1
+         database_lock_safety_check* _check_policy_1 = nullptr;
+         /// Safety check policy for object space 2
+         database_lock_safety_check* _check_policy_2 = nullptr;
+
          /// Maintenance pseudo random number generator
          ///@{
          class maintenance_prng

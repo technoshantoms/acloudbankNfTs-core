@@ -23,6 +23,7 @@
  */
 #pragma once
 #include <graphene/db/object.hpp>
+#include <graphene/db/safety_check_policy.hpp>
 
 #include <fc/interprocess/file_mapping.hpp>
 #include <fc/io/raw.hpp>

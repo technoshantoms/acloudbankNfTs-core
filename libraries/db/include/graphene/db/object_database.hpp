@@ -25,7 +25,7 @@
 #include <graphene/db/object.hpp>
 #include <graphene/db/index.hpp>
 #include <graphene/db/undo_database.hpp>
-
+#include <graphene/db/safety_check_policy.hpp>
 #include <fc/log/logger.hpp>
 
 #include <map>
