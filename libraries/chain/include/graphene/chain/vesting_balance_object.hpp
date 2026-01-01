@@ -22,8 +22,6 @@
  * THE SOFTWARE.
  */
 #pragma once
-#include <graphene/protocol/vesting.hpp>
-#include <graphene/db/object.hpp>
 
 #include <graphene/db/generic_index.hpp>
 #include <graphene/protocol/asset.hpp>
@@ -32,7 +30,6 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/identity.hpp>
 
-#include <algorithm>
 #include <fc/static_variant.hpp>
 #include <fc/uint128.hpp>
 
@@ -168,9 +165,6 @@ namespace graphene { namespace chain {
          vesting_balance_type balance_type = vesting_balance_type::unspecified;
 
          vesting_balance_object() {}
-         asset_id_type get_asset_id() const { return balance.asset_id; }
-
-         share_type get_asset_amount() const { return balance.amount; }
 
          ///@brief Deposit amount into vesting balance, requiring it to vest before withdrawal
          void deposit(const fc::time_point_sec& now, const asset& amount);
@@ -202,7 +196,6 @@ namespace graphene { namespace chain {
    struct by_account;
    // by_vesting_type index MUST NOT be used for iterating because order is not well-defined.
    struct by_vesting_type;
-   struct by_asset_balance;
 
 namespace detail {
 
@@ -234,19 +227,6 @@ namespace detail {
       }
    };
 
-    struct by_asset_balance_helper_asset_id {
-      typedef asset_id_type result_type;
-      result_type operator()(const vesting_balance_object& vbo) const {
-         return vbo.balance.asset_id;
-      }
-   };
-   struct by_asset_balance_helper_asset_amount {
-      typedef share_type result_type;
-      result_type operator()(const vesting_balance_object& vbo) const {
-         return vbo.balance.amount;
-      }
-   };
-
    /**
     * Used as CompatiblePred
     * Compares two vesting_balance_objects
@@ -271,27 +251,15 @@ namespace detail {
    };
 } // detail
 
-typedef multi_index_container<
+   typedef multi_index_container<
       vesting_balance_object,
       indexed_by<
-       ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-       ordered_non_unique< tag<by_account>,
-            member<vesting_balance_object, account_id_type, &vesting_balance_object::owner>>,
-
-      ordered_non_unique< tag<by_asset_balance>,
-           composite_key<
-              vesting_balance_object,
-              by_asset_balance_helper_asset_id,
-              by_asset_balance_helper_asset_amount,
-              member<vesting_balance_object, vesting_balance_type, &vesting_balance_object::balance_type>>>,
-
-      composite_key_compare<
-              std::less< asset_id_type >,
-              std::less< vesting_balance_type >,
-              std::greater< share_type >
-              //std::less< account_id_type >
-              >,
-       hashed_unique< tag<by_vesting_type>,
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id >
+         >,
+         ordered_non_unique< tag<by_account>,
+            member<vesting_balance_object, account_id_type, &vesting_balance_object::owner>
+         >,
+         hashed_unique< tag<by_vesting_type>,
             identity<vesting_balance_object>,
             detail::vesting_balance_object_hash,
             detail::vesting_balance_object_equal

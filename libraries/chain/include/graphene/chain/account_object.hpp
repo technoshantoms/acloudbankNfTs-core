@@ -499,9 +499,9 @@ FC_REFLECT_DERIVED( graphene::chain::account_balance_object,
                     (graphene::db::object),
                     (owner)(asset_type)(balance)(maintenance_flag) )
 
-//FC_REFLECT_TYPENAME( graphene::chain::account_object )
-//FC_REFLECT_TYPENAME( graphene::chain::account_balance_object )
-//FC_REFLECT_TYPENAME( graphene::chain::account_statistics_object )
+FC_REFLECT_TYPENAME( graphene::chain::account_object )
+FC_REFLECT_TYPENAME( graphene::chain::account_balance_object )
+FC_REFLECT_TYPENAME( graphene::chain::account_statistics_object )
 
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_object )
