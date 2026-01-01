@@ -16,8 +16,11 @@
 #include <graphene/chain/witness_schedule_object.hpp>
 
 #include <graphene/protocol/fee_schedule.hpp>
+#include <graphene/protocol/operations.hpp>
 
+#include <fc/crypto/digest.hpp>
 #include <fc/io/raw.hpp>
+#include <fc/thread/non_preemptable_scope_check.hpp>
 #include <fc/thread/parallel.hpp>
 
 namespace graphene { namespace chain {
@@ -713,6 +716,11 @@ processed_transaction database::_apply_transaction(const signed_transaction& trx
    }
    ptrx.operation_results = std::move(eval_state.operation_results);
 
+   //Make sure the temp account has no non-zero balances
+   const auto& balances = get_index_type< primary_index< account_balance_index > >().get_secondary_index< balances_by_account_index >().get_account_balances( GRAPHENE_TEMP_ACCOUNT );
+   for( const auto b : balances )
+      FC_ASSERT(b.second->balance == 0);
+   
    return ptrx;
 } FC_CAPTURE_AND_RETHROW( (trx) ) }
 

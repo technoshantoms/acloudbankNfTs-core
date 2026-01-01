@@ -135,10 +135,10 @@ void debug_apply_update( database& db, const fc::variant_object& vo )
    auto it_id = vo.find("id");
    FC_ASSERT( it_id != vo.end() );
 
-   from_variant( it_id->value(), oid, GRAPHENE_MAX_NESTED_OBJECTS );
+   from_variant( it_id->value(), oid );
    action = ( vo.size() == 1 ) ? db_action_delete : db_action_write;
 
-   from_variant( vo["id"], oid, GRAPHENE_MAX_NESTED_OBJECTS );
+   from_variant( vo["id"], oid );
    if( vo.size() == 1 )
       action = db_action_delete;
    auto it_action = vo.find("_action" );

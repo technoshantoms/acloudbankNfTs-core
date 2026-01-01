@@ -76,8 +76,10 @@
 #include <graphene/chain/permission_evaluator.hpp>
 #include <graphene/chain/commit_reveal_evaluator.hpp>
 
-#include <fc/crypto/digest.hpp>
+#include <graphene/protocol/fee_schedule.hpp>
 
+#include <fc/crypto/digest.hpp>
+#include <fc/uint128.hpp>
 #include <boost/algorithm/string.hpp>
 
 // FOR NFT

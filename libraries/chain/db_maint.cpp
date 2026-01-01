@@ -10,6 +10,7 @@
 #include <graphene/chain/hardfork.hpp>
 
 #include <graphene/chain/account_object.hpp>
+#include <graphene/chain/account_role_object.hpp>
 #include <graphene/chain/asset_object.hpp>
 #include <graphene/chain/balance_object.hpp>
 #include <graphene/chain/budget_record_object.hpp>

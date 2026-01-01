@@ -1,8 +1,32 @@
+/*
+ * Copyright (c) 2015 Cryptonomex, Inc., and contributors.
+ *
+ * The MIT License
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 #pragma once
 
 #include <graphene/chain/types.hpp>
 #include <graphene/db/generic_index.hpp>
-#include <graphene/protocol/operations.hpp>
+#include <graphene/protocol/account.hpp>
+
 #include <boost/multi_index/composite_key.hpp>
 
 namespace graphene { namespace chain {
@@ -288,8 +312,8 @@ namespace graphene { namespace chain {
 
          account_id_type get_id()const { return id; }
    };
-
-      /**
+    
+     /**
     *  @brief This secondary index will allow a reverse lookup of all accounts that have been referred by
     *  a particular account.
     */
@@ -312,6 +336,7 @@ namespace graphene { namespace chain {
     */
    class account_member_index : public secondary_index
    {
+
       /* std::less::operator() is less efficient so using key_compare here.
        * Let assume that it has two keys key1 and key2 and we want to insert key3.
        * the insert function needs to first call std::less::operator() with key1 and key3.
@@ -333,7 +358,6 @@ namespace graphene { namespace chain {
       public:
          virtual void object_inserted( const object& obj ) override;
          virtual void object_removed( const object& obj ) override;
-         //virtual void object_created( const object& obj ) override;
          virtual void about_to_modify( const object& before ) override;
          virtual void object_modified( const object& after  ) override;
 
@@ -364,7 +388,6 @@ namespace graphene { namespace chain {
    {
       public:
          virtual void object_inserted( const object& obj ) override;
-         //virtual void object_created( const object& obj ) override;
          virtual void object_removed( const object& obj ) override;
          virtual void about_to_modify( const object& before ) override;
          virtual void object_modified( const object& after  ) override;
@@ -383,23 +406,15 @@ namespace graphene { namespace chain {
 
    struct by_asset_balance;
    struct by_maintenance_flag;
-   struct by_account_asset;
-   struct by_owner;
    /**
     * @ingroup object_index
     */
    typedef multi_index_container<
+      account_balance_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
          ordered_non_unique< tag<by_maintenance_flag>,
                              member< account_balance_object, bool, &account_balance_object::maintenance_flag > >,
-         ordered_unique< tag<by_account_asset>,
-            composite_key<
-               account_balance_object,
-               member<account_balance_object, account_id_type, &account_balance_object::owner>,
-               member<account_balance_object, asset_id_type, &account_balance_object::asset_type>
-            >
-         >,
          ordered_unique< tag<by_asset_balance>,
             composite_key<
                account_balance_object,
@@ -448,8 +463,6 @@ namespace graphene { namespace chain {
       account_statistics_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_unique< tag<by_owner>,
-                         member< account_statistics_object, account_id_type, &account_statistics_object::owner > >,
          ordered_unique< tag<by_maintenance_seq>,
             composite_key<
                account_statistics_object,
@@ -471,38 +484,9 @@ MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_balance_object)
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_statistics_object)
 
-FC_REFLECT_DERIVED( graphene::chain::account_object,
-                    (graphene::db::object),
-                    (membership_expiration_date)(registrar)(referrer)(lifetime_referrer)
-                    (network_fee_percentage)(lifetime_referrer_fee_percentage)(referrer_rewards_percentage)
-                    (name)(owner)(active)(options)(statistics)(whitelisting_accounts)(blacklisting_accounts)
-                    (whitelisted_accounts)(blacklisted_accounts)
-                    (cashback_vb)
-                    (owner_special_authority)(active_special_authority)
-                    (top_n_control_flags)
-                    (allowed_assets)
-                    )
-FC_REFLECT_DERIVED( graphene::chain::account_statistics_object,
-                    (graphene::chain::object),
-                    (owner)(name)
-                    (most_recent_op)
-                    (total_ops)(removed_ops)
-                    (total_core_in_orders)
-                    (core_in_balance)
-                    (has_cashback_vb)
-                    (is_voting)
-                    (lifetime_fees_paid)
-                    (pending_fees)(pending_vested_fees)
-                    (last_vote_time)
-                  )
-FC_REFLECT_DERIVED( graphene::chain::account_balance_object,
-                    (graphene::db::object),
-                    (owner)(asset_type)(balance)(maintenance_flag) )
-
 FC_REFLECT_TYPENAME( graphene::chain::account_object )
 FC_REFLECT_TYPENAME( graphene::chain::account_balance_object )
 FC_REFLECT_TYPENAME( graphene::chain::account_statistics_object )
-
 
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_balance_object )
