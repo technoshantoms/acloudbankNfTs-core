@@ -13,7 +13,7 @@ namespace graphene
         {
         public:
             static const uint8_t space_id = protocol_ids;
-            static const uint8_t type_id = account_role_type;
+            static const uint8_t type_id = account_role_object_type;
 
             account_id_type owner;
             std::string name;

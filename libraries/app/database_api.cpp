@@ -2858,6 +2858,9 @@ fc::optional<custom_permission_object> database_api_impl::get_custom_permission_
    vector<offer_history_object> get_offer_history_by_item(const offer_history_id_type lower_id, const nft_id_type item, uint32_t limit) const;
    vector<offer_history_object> get_offer_history_by_bidder(const offer_history_id_type lower_id, const account_id_type bidder_account_id, uint32_t limit) const;
 
+    // Account Role
+   vector<account_role_object> get_account_roles_by_owner(account_id_type owner) const;
+
    uint32_t api_limit_get_lower_bound_symbol = 100;
    uint32_t api_limit_get_limit_orders = 300;
    uint32_t api_limit_get_limit_orders_by_account = 101;
@@ -3356,6 +3359,20 @@ vector<offer_history_object> database_api_impl::get_offer_history_by_bidder(cons
       itr++;
    }
 
+   return result;
+}
+
+vector<account_role_object> database_api::get_account_roles_by_owner(account_id_type owner) const {
+   return my->get_account_roles_by_owner(owner);
+}
+
+vector<account_role_object> database_api_impl::get_account_roles_by_owner(account_id_type owner) const {
+   const auto &idx_aro = _db.get_index_type<account_role_index>().indices().get<by_owner>();
+   auto idx_aro_range = idx_aro.equal_range(owner);
+   vector<account_role_object> result;
+   for (auto itr = idx_aro_range.first; itr != idx_aro_range.second; ++itr) {
+      result.push_back(*itr);
+   }
    return result;
 }
 //////////////////////////////////////////////////////////////////////

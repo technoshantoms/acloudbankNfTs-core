@@ -1,4 +1,5 @@
 #pragma once
+//#include <graphene/chain/types.hpp>
 #include <graphene/protocol/operations.hpp>
 #include <graphene/db/generic_index.hpp>
 
