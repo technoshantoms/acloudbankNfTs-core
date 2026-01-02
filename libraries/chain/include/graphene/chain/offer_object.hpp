@@ -4,6 +4,8 @@
 
 #include <graphene/protocol/operations.hpp>
 
+#include <graphene/protocol/nft_ops.hpp>
+
 #include <graphene/db/generic_index.hpp>
 
 #include <graphene/protocol/asset.hpp>
@@ -42,7 +44,7 @@ namespace graphene
         {
         public:
             static const uint8_t space_id = implementation_ids;
-            static const uint8_t type_id = offer_history_object_type;
+            static const uint8_t type_id = impl_offer_history_object_type; 
 
             account_id_type issuer;
 
