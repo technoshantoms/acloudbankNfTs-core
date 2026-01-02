@@ -45,5 +45,7 @@ namespace graphene
     } // namespace chain
 } // namespace graphene
 
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_role_object)
+
 FC_REFLECT_DERIVED(graphene::chain::account_role_object, (graphene::db::object),
                    (owner)(name)(metadata)(allowed_operations)(whitelisted_accounts)(valid_to))

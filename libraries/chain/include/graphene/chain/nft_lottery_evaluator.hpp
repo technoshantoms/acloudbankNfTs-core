@@ -1,14 +1,16 @@
 #pragma once
-#include <graphene/protocol/operations.hpp>
+
 #include <graphene/chain/evaluator.hpp>
 #include <graphene/chain/database.hpp>
+
+#include <graphene/protocol/operations.hpp>
 
 namespace graphene
 {
    namespace chain
    {
 
-      class nft_lottery_token_purchase_evaluator : public evaluator<nft_lottery_token_purchase_evaluator>
+      class nft_lottery_token_purchase_evaluator : public fee_handling_evaluator<nft_lottery_token_purchase_evaluator>
       {
       public:
          typedef nft_lottery_token_purchase_operation operation_type;
@@ -17,7 +19,7 @@ namespace graphene
          object_id_type do_apply(const nft_lottery_token_purchase_operation &o);
       };
 
-      class nft_lottery_reward_evaluator : public evaluator<nft_lottery_reward_evaluator>
+      class nft_lottery_reward_evaluator : public fee_handling_evaluator<nft_lottery_reward_evaluator>
       {
       public:
          typedef nft_lottery_reward_operation operation_type;
@@ -26,7 +28,7 @@ namespace graphene
          void_result do_apply(const nft_lottery_reward_operation &o);
       };
 
-      class nft_lottery_end_evaluator : public evaluator<nft_lottery_end_evaluator>
+      class nft_lottery_end_evaluator : public fee_handling_evaluator<nft_lottery_end_evaluator>
       {
       public:
          typedef nft_lottery_end_operation operation_type;

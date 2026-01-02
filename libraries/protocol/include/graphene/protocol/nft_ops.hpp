@@ -1,7 +1,6 @@
 #pragma once
 #include <graphene/protocol/base.hpp>
 #include <graphene/protocol/types.hpp>
-#include <graphene/protocol/asset.hpp>
 
 namespace graphene { namespace protocol {
 
@@ -28,7 +27,7 @@ namespace graphene { namespace protocol {
       void validate() const;
    };
 
-   struct nft_metadata_create_operation : public graphene::protocol::base_operation
+   struct nft_metadata_create_operation : public base_operation
    {
       struct fee_parameters_type
       {
@@ -58,7 +57,7 @@ namespace graphene { namespace protocol {
       share_type calculate_fee(const fee_parameters_type &k) const;
    };
 
-   struct nft_metadata_update_operation : public graphene::protocol::base_operation
+   struct nft_metadata_update_operation : public base_operation
    {
       struct fee_parameters_type
       {
@@ -85,7 +84,7 @@ namespace graphene { namespace protocol {
       share_type calculate_fee(const fee_parameters_type &k) const;
    };
 
-   struct nft_mint_operation : public graphene::protocol::base_operation
+   struct nft_mint_operation : public base_operation
    {
       struct fee_parameters_type
       {
@@ -108,7 +107,7 @@ namespace graphene { namespace protocol {
       share_type calculate_fee(const fee_parameters_type &k) const;
    };
 
-   struct nft_safe_transfer_from_operation : public graphene::protocol::base_operation
+   struct nft_safe_transfer_from_operation : public base_operation
    {
       struct fee_parameters_type
       {
@@ -129,7 +128,7 @@ namespace graphene { namespace protocol {
       share_type calculate_fee(const fee_parameters_type &k) const;
    };
 
-   struct nft_approve_operation : public graphene::protocol::base_operation
+   struct nft_approve_operation : public base_operation
    {
       struct fee_parameters_type { uint64_t fee = GRAPHENE_BLOCKCHAIN_PRECISION; };
       asset fee;
@@ -144,7 +143,7 @@ namespace graphene { namespace protocol {
       share_type calculate_fee(const fee_parameters_type &k) const;
    };
 
-   struct nft_set_approval_for_all_operation : public graphene::protocol::base_operation
+   struct nft_set_approval_for_all_operation : public base_operation
    {
       struct fee_parameters_type { uint64_t fee = GRAPHENE_BLOCKCHAIN_PRECISION; };
       asset fee;

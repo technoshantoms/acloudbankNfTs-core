@@ -7,7 +7,7 @@
 
 namespace graphene { namespace chain {
 
-   class account_role_create_evaluator : public evaluator<account_role_create_evaluator>
+   class account_role_create_evaluator : public fee_handling_evaluator<account_role_create_evaluator>
    {
       public:
          typedef account_role_create_operation operation_type;
@@ -15,7 +15,7 @@ namespace graphene { namespace chain {
          object_id_type do_apply( const account_role_create_operation& o );
    };
 
-   class account_role_update_evaluator : public evaluator<account_role_update_evaluator>
+   class account_role_update_evaluator : public fee_handling_evaluator<account_role_update_evaluator>
    {
       public:
          typedef account_role_update_operation operation_type;
@@ -23,7 +23,7 @@ namespace graphene { namespace chain {
          void_result do_apply( const account_role_update_operation& o );
    };
 
-   class account_role_delete_evaluator : public evaluator<account_role_delete_evaluator>
+   class account_role_delete_evaluator : public fee_handling_evaluator<account_role_delete_evaluator>
    {
       public:
          typedef account_role_delete_operation operation_type;

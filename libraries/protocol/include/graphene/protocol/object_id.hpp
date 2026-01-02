@@ -109,7 +109,6 @@ namespace graphene { namespace db {
    {
       static constexpr uint8_t space_id = SpaceID;
       static constexpr uint8_t type_id = TypeID;
-
       object_id() = default;
       object_id( unsigned_int i ):instance(i){}
       explicit object_id( uint64_t i ):instance(i)

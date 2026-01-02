@@ -4,22 +4,18 @@
 
 #include <graphene/protocol/operations.hpp>
 
-#include <graphene/protocol/nft_ops.hpp>
-
 #include <graphene/db/generic_index.hpp>
-
-#include <graphene/protocol/asset.hpp>
 
 namespace graphene
 {
     namespace chain
     {
-    class database;
+        class database;
 
-    struct by_expiration_date
+        struct by_expiration_date
         {
         };
-    class offer_object : public graphene::db::abstract_object<offer_object>
+        class offer_object : public graphene::db::abstract_object<offer_object>
         {
         public:
             static const uint8_t space_id = protocol_ids;
@@ -37,14 +33,14 @@ namespace graphene
             fc::time_point_sec offer_expiration_date;
 
             offer_id_type get_id() const { return id; }
-    };
+        };
 
-    class offer_history_object
+        class offer_history_object
             : public graphene::db::abstract_object<offer_history_object>
         {
         public:
             static const uint8_t space_id = implementation_ids;
-            static const uint8_t type_id = impl_offer_history_object_type; 
+            static const uint8_t type_id = impl_offer_history_object_type;
 
             account_id_type issuer;
 
@@ -59,7 +55,7 @@ namespace graphene
             result_type result;
 
             offer_history_id_type get_id() const { return id; }
-    };
+        };
 
         class offer_item_index : public secondary_index
         {

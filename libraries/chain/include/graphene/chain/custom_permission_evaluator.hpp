@@ -1,5 +1,7 @@
 #pragma once
+
 #include <graphene/chain/evaluator.hpp>
+
 #include <graphene/protocol/custom_permission.hpp>
 
 namespace graphene
@@ -7,7 +9,7 @@ namespace graphene
 namespace chain
 {
 
-class create_custom_permission_evaluator : public evaluator<create_custom_permission_evaluator>
+class create_custom_permission_evaluator : public fee_handling_evaluator<create_custom_permission_evaluator>
 {
 public:
    typedef custom_permission_create_operation operation_type;
@@ -16,7 +18,7 @@ public:
    object_id_type do_apply(const custom_permission_create_operation &o);
 };
 
-class update_custom_permission_evaluator : public evaluator<update_custom_permission_evaluator>
+class update_custom_permission_evaluator : public fee_handling_evaluator<update_custom_permission_evaluator>
 {
 public:
    typedef custom_permission_update_operation operation_type;
@@ -25,7 +27,7 @@ public:
    object_id_type do_apply(const custom_permission_update_operation &o);
 };
 
-class delete_custom_permission_evaluator : public evaluator<delete_custom_permission_evaluator>
+class delete_custom_permission_evaluator : public fee_handling_evaluator<delete_custom_permission_evaluator>
 {
 public:
    typedef custom_permission_delete_operation operation_type;
@@ -36,3 +38,4 @@ public:
 
 } // namespace chain
 } // namespace graphene
+

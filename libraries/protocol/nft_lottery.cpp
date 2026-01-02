@@ -2,7 +2,9 @@
 #include <graphene/protocol/nft_lottery.hpp>
 #include <graphene/protocol/operations.hpp>
 
-namespace graphene { namespace protocol
+namespace graphene
+{
+    namespace protocol
     {
 
         void nft_lottery_options::validate() const

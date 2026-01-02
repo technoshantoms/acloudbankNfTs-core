@@ -1,9 +1,11 @@
 #pragma once
 #include <graphene/protocol/base.hpp>
 #include <graphene/protocol/authority.hpp>
-#include <graphene/protocol/asset.hpp>
 
-namespace graphene{namespace protocol{
+namespace graphene
+{
+namespace protocol
+{
 
 struct custom_permission_create_operation : public base_operation
 {

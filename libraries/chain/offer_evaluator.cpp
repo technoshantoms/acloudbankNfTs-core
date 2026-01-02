@@ -1,3 +1,5 @@
+#include <graphene/protocol/operations.hpp>
+
 #include <graphene/chain/offer_evaluator.hpp>
 #include <graphene/chain/account_object.hpp>
 #include <graphene/chain/offer_object.hpp>
@@ -6,6 +8,7 @@
 #include <graphene/chain/exceptions.hpp>
 #include <graphene/chain/hardfork.hpp>
 #include <graphene/chain/is_authorized_asset.hpp>
+
 #include <iostream>
 
 namespace graphene
@@ -39,6 +42,15 @@ namespace graphene
                     }
                     const auto &nft_meta_obj = nft_obj.nft_metadata_id(d);
                     FC_ASSERT(nft_meta_obj.is_sellable == true, "NFT is not sellable");
+                    if (nft_meta_obj.account_role)
+                    {
+                        const auto &ar_idx = db().get_index_type<account_role_index>().indices().get<by_id>();
+                        auto ar_itr = ar_idx.find(*nft_meta_obj.account_role);
+                        if(ar_itr != ar_idx.end())
+                        {
+                            FC_ASSERT(db().account_role_valid(*ar_itr, op.issuer, get_type()), "Account role not valid");
+                        }
+                    }
                 }
                 FC_ASSERT(op.offer_expiration_date > d.head_block_time(), "Expiration should be in future");
                 FC_ASSERT(op.fee.amount >= 0, "Invalid fee");
@@ -84,7 +96,6 @@ namespace graphene
                 auto now = d.head_block_time();
                 FC_ASSERT(now >= HARDFORK_NFT_TIME, "Not allowed until NFT HF");
                 const auto &offer = op.offer_id(d);
-                op.bidder(d);
                 for (const auto &item : offer.item_ids)
                 {
                     const auto &nft_obj = item(d);
@@ -100,6 +111,18 @@ namespace graphene
                         FC_ASSERT(!is_owner, "Bidder cannot already be an onwer of the item");
                         FC_ASSERT(!is_approved, "Bidder cannot already be an approved account of the item");
                         FC_ASSERT(!is_approved_operator, "Bidder cannot already be an approved operator of the item");
+                    }
+
+                    const auto &nft_meta_obj = nft_obj.nft_metadata_id(d);
+                    FC_ASSERT(nft_meta_obj.is_sellable == true, "NFT is not sellable");
+                    if (nft_meta_obj.account_role)
+                    {
+                        const auto &ar_idx = db().get_index_type<account_role_index>().indices().get<by_id>();
+                        auto ar_itr = ar_idx.find(*nft_meta_obj.account_role);
+                        if(ar_itr != ar_idx.end())
+                        {
+                            FC_ASSERT(db().account_role_valid(*ar_itr, op.bidder, get_type()), "Account role not valid");
+                        }
                     }
                 }
 

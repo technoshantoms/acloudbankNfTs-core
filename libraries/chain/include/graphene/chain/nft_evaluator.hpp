@@ -2,12 +2,13 @@
 
 #include <graphene/chain/database.hpp>
 #include <graphene/chain/evaluator.hpp>
+
 #include <graphene/protocol/operations.hpp>
 #include <graphene/protocol/types.hpp>
 
 namespace graphene { namespace chain {
 
-   class nft_metadata_create_evaluator : public evaluator<nft_metadata_create_evaluator>
+   class nft_metadata_create_evaluator : public fee_handling_evaluator<nft_metadata_create_evaluator>
    {
       public:
          typedef nft_metadata_create_operation operation_type;
@@ -15,7 +16,7 @@ namespace graphene { namespace chain {
          object_id_type do_apply( const nft_metadata_create_operation& o );
    };
 
-   class nft_metadata_update_evaluator : public evaluator<nft_metadata_update_evaluator>
+   class nft_metadata_update_evaluator : public fee_handling_evaluator<nft_metadata_update_evaluator>
    {
       public:
          typedef nft_metadata_update_operation operation_type;
@@ -23,7 +24,7 @@ namespace graphene { namespace chain {
          void_result do_apply( const nft_metadata_update_operation& o );
    };
 
-   class nft_mint_evaluator : public evaluator<nft_mint_evaluator>
+   class nft_mint_evaluator : public fee_handling_evaluator<nft_mint_evaluator>
    {
       public:
          typedef nft_mint_operation operation_type;
@@ -31,7 +32,7 @@ namespace graphene { namespace chain {
          object_id_type do_apply( const nft_mint_operation& o );
    };
 
-   class nft_safe_transfer_from_evaluator : public evaluator<nft_safe_transfer_from_evaluator>
+   class nft_safe_transfer_from_evaluator : public fee_handling_evaluator<nft_safe_transfer_from_evaluator>
    {
       public:
          typedef nft_safe_transfer_from_operation operation_type;
@@ -39,7 +40,7 @@ namespace graphene { namespace chain {
          object_id_type do_apply( const nft_safe_transfer_from_operation& o );
    };
 
-   class nft_approve_evaluator : public evaluator<nft_approve_evaluator>
+   class nft_approve_evaluator : public fee_handling_evaluator<nft_approve_evaluator>
    {
       public:
          typedef nft_approve_operation operation_type;
@@ -47,7 +48,7 @@ namespace graphene { namespace chain {
          object_id_type do_apply( const nft_approve_operation& o );
    };
 
-   class nft_set_approval_for_all_evaluator : public evaluator<nft_set_approval_for_all_evaluator>
+   class nft_set_approval_for_all_evaluator : public fee_handling_evaluator<nft_set_approval_for_all_evaluator>
    {
       public:
          typedef nft_set_approval_for_all_operation operation_type;
