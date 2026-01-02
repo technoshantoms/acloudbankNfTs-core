@@ -1,19 +1,21 @@
 #pragma once
+
 #include <graphene/chain/types.hpp>
+
 #include <graphene/protocol/operations.hpp>
+
 #include <graphene/db/generic_index.hpp>
-#include <graphene/protocol/asset.hpp>
 
 namespace graphene
 {
     namespace chain
     {
-        class database;
+    class database;
 
-        struct by_expiration_date
+    struct by_expiration_date
         {
         };
-        class offer_object : public graphene::db::abstract_object<offer_object>
+    class offer_object : public graphene::db::abstract_object<offer_object>
         {
         public:
             static const uint8_t space_id = protocol_ids;
@@ -31,9 +33,9 @@ namespace graphene
             fc::time_point_sec offer_expiration_date;
 
             offer_id_type get_id() const { return id; }
-        };
+    };
 
-        class offer_history_object
+    class offer_history_object
             : public graphene::db::abstract_object<offer_history_object>
         {
         public:
@@ -53,7 +55,7 @@ namespace graphene
             result_type result;
 
             offer_history_id_type get_id() const { return id; }
-        };
+    };
 
         class offer_item_index : public secondary_index
         {
@@ -100,6 +102,9 @@ namespace graphene
 
     } // namespace chain
 } // namespace graphene
+
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::offer_object)
+MAP_OBJECT_ID_TO_TYPE(graphene::chain::offer_history_object)
 
 FC_REFLECT_DERIVED(graphene::chain::offer_object, (graphene::db::object),
                    (issuer)(item_ids)(bidder)(bid_price)(minimum_price)(

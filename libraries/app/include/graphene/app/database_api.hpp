@@ -1336,4 +1336,7 @@ FC_API(graphene::app::database_api,
    (get_offer_history_by_issuer)
    (get_offer_history_by_item)
    (get_offer_history_by_bidder)
+
+     // Account Roles
+   (get_account_roles_by_owner)
 )

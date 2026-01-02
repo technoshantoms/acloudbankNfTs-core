@@ -558,6 +558,34 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
         } case ico_balance_object_type:{
            /** these are free from any accounts */
            break;
+        case custom_account_authority_object_type:
+           break;
+          case offer_object_type:{
+           auto aobj = dynamic_cast<const offer_object*>(obj);
+           assert(aobj != nullptr);
+           accounts.insert(aobj->issuer);
+           if (aobj->bidder.valid())
+               accounts.insert(*aobj->bidder);
+           break;
+        case nft_object_type:{
+           auto aobj = dynamic_cast<const nft_object*>(obj);
+           assert(aobj != nullptr);
+           accounts.insert(aobj->owner);
+           accounts.insert(aobj->approved);
+           accounts.insert(aobj->approved_operators.begin(), aobj->approved_operators.end());
+           break;
+        case account_role_object_type:{
+           const auto& aobj = dynamic_cast<const account_role_object*>(obj);
+           assert( aobj != nullptr );
+           accounts.insert( aobj->owner );
+           accounts.insert( aobj->whitelisted_accounts.begin(), aobj->whitelisted_accounts.end() );
+           break;
+        case custom_permission_object_type:{
+           auto aobj = dynamic_cast<const custom_permission_object*>(obj);
+           assert(aobj != nullptr);
+           accounts.insert(aobj->account);
+           add_authority_accounts(accounts, aobj->auth);
+           break;
         } case htlc_object_type:{
               const auto& htlc_obj = dynamic_cast<const htlc_object*>(obj);
               FC_ASSERT( htlc_obj != nullptr );
