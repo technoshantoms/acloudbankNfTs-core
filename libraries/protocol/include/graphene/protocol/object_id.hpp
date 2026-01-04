@@ -107,10 +107,9 @@ namespace graphene { namespace db {
    template<uint8_t SpaceID, uint8_t TypeID>
    struct object_id
    {
-      //static constexpr uint8_t space_id = SpaceID;
-      //static constexpr uint8_t type_id = TypeID;
-      static const uint8_t space_id = SpaceID;
-      static const uint8_t type_id = TypeID;
+      static constexpr uint8_t space_id = SpaceID;
+      static constexpr uint8_t type_id = TypeID;
+
       object_id() = default;
       object_id( unsigned_int i ):instance(i){}
       explicit object_id( uint64_t i ):instance(i)
@@ -128,7 +127,7 @@ namespace graphene { namespace db {
       explicit operator uint64_t()const { return object_id_type( *this ).number; }
 
       template<typename DB>
-      auto operator()(const DB& db)const -> const decltype(db.get(*this))& { return db.get(*this); }
+      decltype(auto) operator()(const DB& db)const { return db.get(*this); }
 
       friend bool  operator == ( const object_id& a, const object_id& b ) { return a.instance == b.instance; }
       friend bool  operator != ( const object_id& a, const object_id& b ) { return a.instance != b.instance; }
@@ -183,7 +182,6 @@ struct reflector<graphene::db::object_id<SpaceID,TypeID> >
        visitor.TEMPLATE operator()<member_type,type,&type::instance>( "instance" );
     }
 };
-
 namespace member_names {
 template<uint8_t S, uint8_t T>
 struct member_name<graphene::db::object_id<S,T>, 0> { static constexpr const char* value = "instance"; };
