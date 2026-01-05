@@ -32,6 +32,7 @@
 #include <graphene/chain/custom_account_authority_object.hpp>
 #include <graphene/chain/offer_object.hpp>
 #include <graphene/chain/account_role_object.hpp>
+#include <graphene/chain/custom_authority_object.hpp>
 
 #include <ctime>
 #include <algorithm>
