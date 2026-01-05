@@ -12,12 +12,35 @@
 #include <graphene/chain/exceptions.hpp>
 #include <graphene/chain/evaluator.hpp>
 #include <graphene/chain/witness_schedule_object.hpp>
+
 #include <graphene/protocol/fee_schedule.hpp>
+#include <graphene/protocol/operations.hpp> //satia
 
 #include <fc/io/raw.hpp>
-#include <fc/crypto/digest.hpp>
+#include <fc/crypto/digest.hpp> //satia
 #include <fc/thread/parallel.hpp>
 
+namespace {
+
+   struct proposed_operations_digest_accumulator
+   {
+      typedef void result_type;
+
+      void operator()(const graphene::chain::proposal_create_operation& proposal)
+      {
+         for (auto& operation: proposal.proposed_ops)
+         {
+            proposed_operations_digests.push_back(fc::digest(operation.op));
+         }
+      }
+
+      //empty template method is needed for all other operation types
+      //we can ignore them, we are interested in only proposal_create_operation
+template<class T>
+   void operator()(const T&) {}
+      std::vector<fc::sha256> proposed_operations_digests;
+   };
+}
 namespace graphene { namespace chain {
 bool database::is_known_block( const block_id_type& id )const
 {
@@ -81,27 +104,6 @@ std::vector<block_id_type> database::get_block_ids_on_fork(block_id_type head_of
   result.emplace_back(branches.first.back()->previous_id());
   return result;
 }
-//satia
- struct proposed_operations_digest_accumulator
-   {
-      typedef void result_type;
-
-      void operator()(const graphene::chain::proposal_create_operation& proposal)
-      {
-         for (auto& operation: proposal.proposed_ops)
-         {
-            proposed_operations_digests.push_back(fc::digest(operation.op));
-         }
-      }
-
-      //empty template method is needed for all other operation types
-      //we can ignore them, we are interested in only proposal_create_operation
-   template<class T>
-   void operator()(const T&)
-   {}
-
-   std::vector<fc::sha256> proposed_operations_digests;
-};
 
 /**
  * Push block "may fail" in which case every partial change is unwound.  After

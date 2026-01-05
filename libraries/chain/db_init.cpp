@@ -38,7 +38,7 @@
 #include <graphene/chain/custom_account_authority_object.hpp>
 #include <graphene/chain/offer_object.hpp>
 #include <graphene/chain/nft_object.hpp>
-//NFT MINT
+//NFT 
 #include <graphene/chain/custom_permission_evaluator.hpp>
 #include <graphene/chain/custom_account_authority_evaluator.hpp>
 #include <graphene/chain/offer_evaluator.hpp>
@@ -70,7 +70,6 @@
 #include <graphene/chain/worker_evaluator.hpp>
 #include <graphene/chain/htlc_evaluator.hpp>
 #include <graphene/chain/custom_authority_evaluator.hpp>
-
 #include <graphene/chain/tnt/evaluators.hpp>
 #include <graphene/chain/personal_data_evaluator.hpp>
 #include <graphene/chain/content_card_evaluator.hpp>
@@ -83,22 +82,7 @@
 #include <fc/uint128.hpp>
 #include <boost/algorithm/string.hpp>
 
-const uint8_t offer_object::space_id;
-const uint8_t offer_object::type_id;
-
-const uint8_t offer_history_object::space_id;
-const uint8_t offer_history_object::type_id;
-
-const uint8_t account_role_object::space_id;
-const uint8_t account_role_object::type_id;
-
-const uint8_t nft_lottery_balance_object::space_id;
-const uint8_t nft_lottery_balance_object::type_id;
-
-const uint8_t random_number_object::space_id;
-const uint8_t random_number_object::type_id;
 namespace graphene { namespace chain {
-
 
 void database::initialize_evaluators()
 {

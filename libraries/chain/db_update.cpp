@@ -31,6 +31,7 @@
 #include <graphene/chain/hardfork.hpp>
 #include <graphene/chain/htlc_object.hpp>
 #include <graphene/chain/market_object.hpp>
+#include <graphene/chain/offer_object.hpp>
 #include <graphene/chain/proposal_object.hpp>
 #include <graphene/chain/ticket_object.hpp>
 #include <graphene/chain/transaction_history_object.hpp>
@@ -38,6 +39,7 @@
 #include <graphene/chain/witness_object.hpp>
 
 #include <graphene/protocol/fee_schedule.hpp>
+#include <fc/uint128.hpp>
 
 namespace graphene { namespace chain {
 
@@ -524,7 +526,7 @@ void database::update_withdraw_permissions()
       remove(*permit_index.begin());
 }
 
-uint64_t database::get_random_numbers( uint64_t bound )
+uint64_t database::get_random_bits( uint64_t bound )
 {
    return _random_number_generator(bound);
 }

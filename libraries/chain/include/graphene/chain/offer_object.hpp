@@ -1,12 +1,5 @@
 #pragma once
-
-#include <graphene/chain/types.hpp>
-
-//SATIA
-#include <graphene/db/object.hpp>
-
-#include <graphene/protocol/operations.hpp>
-
+#include <graphene/chain/protocol/operations.hpp>
 #include <graphene/db/generic_index.hpp>
 
 namespace graphene
@@ -43,7 +36,7 @@ namespace graphene
         {
         public:
             static const uint8_t space_id = implementation_ids;
-            static const uint8_t type_id = offer_history_object;
+            static const uint8_t type_id = impl_offer_history_object_type;
 
             account_id_type issuer;
 
@@ -55,14 +48,9 @@ namespace graphene
 
             bool buying_item;
             fc::time_point_sec offer_expiration_date;
-            
-            decltype(auto)  result;
+            result_type result;
 
-            decltype(auto) get_id() const { return id; }
-
-           // decltype result;
-
-           // offer_history_object get_id() const { return id; }
+            offer_history_id_type get_id() const { return id; }
         };
 
         class offer_item_index : public secondary_index
@@ -110,9 +98,6 @@ namespace graphene
 
     } // namespace chain
 } // namespace graphene
-
-MAP_OBJECT_ID_TO_TYPE(graphene::chain::offer_object)
-MAP_OBJECT_ID_TO_TYPE(graphene::chain::offer_history_object)
 
 FC_REFLECT_DERIVED(graphene::chain::offer_object, (graphene::db::object),
                    (issuer)(item_ids)(bidder)(bid_price)(minimum_price)(

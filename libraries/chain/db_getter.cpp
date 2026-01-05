@@ -25,17 +25,16 @@
 
 #include <graphene/chain/database.hpp>
 
-#include <graphene/db/index.hpp>
-#include <graphene/chain/account_role_object.hpp>
-#include <graphene/chain/custom_account_authority_object.hpp>
-#include <graphene/chain/custom_permission_object.hpp>
-#include <graphene/chain/offer_object.hpp>
 #include <graphene/chain/asset_object.hpp>
 #include <graphene/chain/chain_property_object.hpp>
 #include <graphene/chain/global_property_object.hpp>
-#include <graphene/chain/custom_authority_object.hpp>
+#include <graphene/chain/custom_permission_object.hpp>
+#include <graphene/chain/custom_account_authority_object.hpp>
+#include <graphene/chain/offer_object.hpp>
+#include <graphene/chain/account_role_object.hpp>
+#include <graphene/chain/son_object.hpp>
+#include <graphene/chain/son_proposal_object.hpp>
 
-#include <graphene/chain/nft_object.hpp>
 
 #include <ctime>
 #include <algorithm>
@@ -69,8 +68,8 @@ const dynamic_global_property_object& database::get_dynamic_global_properties() 
 
 const fee_schedule&  database::current_fee_schedule()const
 {
-   // return get_global_properties().parameters.get_current_fees();
-   return std::ref( *get_global_properties().parameters.current_fees );
+   return get_global_properties().parameters.get_current_fees();
+   //return std::ref( *get_global_properties().parameters.current_fees );
 }
 
 time_point_sec database::head_block_time()const
@@ -170,19 +169,13 @@ std::vector<uint32_t> database::get_seeds( asset_id_type for_asset, uint8_t coun
 
 const account_statistics_object& database::get_account_stats_by_owner( account_id_type owner )const
 {
-   //return account_statistics_id_type(owner.instance)(*this);
-   auto& idx = get_index_type<account_stats_index>().indices().get<by_owner>();
-   auto itr = idx.find( owner );
-   FC_ASSERT( itr != idx.end(), "Can not find account statistics object for owner ${a}", ("a",owner) );
-   return *itr;
+   return account_statistics_id_type(owner.instance)(*this);
 }
 
 const witness_schedule_object& database::get_witness_schedule_object()const
 {
    return *_p_witness_schedule_obj;
 }
-
-
 vector<authority> database::get_account_custom_authorities(account_id_type account, const operation& op)const
 {
    const auto& pindex = get_index_type<custom_permission_index>().indices().get<by_account_and_permission>();
@@ -219,6 +212,7 @@ bool database::account_role_valid(const account_role_object &aro, account_id_typ
           (aro.whitelisted_accounts.find(account) != aro.whitelisted_accounts.end()) &&
           (!op_type || (aro.allowed_operations.find(*op_type) != aro.allowed_operations.end()));
 }
+
 vector<uint64_t> database::get_random_numbers(uint64_t minimum, uint64_t maximum, uint64_t selections, bool duplicates)
 {
    FC_ASSERT( selections <= 100000 );
@@ -231,7 +225,7 @@ vector<uint64_t> database::get_random_numbers(uint64_t minimum, uint64_t maximum
 
    if (duplicates) {
       for (uint64_t i = 0; i < selections; i++) {
-         int64_t rnd = get_random_numbers(maximum - minimum) + minimum;
+         int64_t rnd = get_random_bits(maximum - minimum) + minimum;
          v.push_back(rnd);
       }
    } else {
@@ -242,7 +236,7 @@ vector<uint64_t> database::get_random_numbers(uint64_t minimum, uint64_t maximum
       }
 
       for (uint64_t i = 0; (i < selections) && (tmpv.size() > 0); i++) {
-         uint64_t idx = get_random_numbers(tmpv.size());
+         uint64_t idx = get_random_bits(tmpv.size());
          v.push_back(tmpv.at(idx));
          tmpv.erase(tmpv.begin() + idx);
       }
