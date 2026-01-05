@@ -49,4 +49,5 @@ GRAPHENE_DEFINE_IDS(chain, implementation_ids, impl_,
                     /* 2.16.x */ (lottery_balance)
                     /* 2.17.x */ (nft_lottery_balance)
                     /* 2.18.x */(sweeps_vesting_balance)
+                    /* 2.19.x */(offer_history)
                    )
