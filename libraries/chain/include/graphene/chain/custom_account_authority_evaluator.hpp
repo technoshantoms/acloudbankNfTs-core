@@ -8,7 +8,7 @@ namespace graphene
 namespace chain
 {
 
-class create_custom_account_authority_evaluator : public fee_handling_evaluator<create_custom_account_authority_evaluator>
+class create_custom_account_authority_evaluator : public evaluator<create_custom_account_authority_evaluator>
 {
 public:
    typedef custom_account_authority_create_operation operation_type;
@@ -17,7 +17,7 @@ public:
    object_id_type do_apply(const custom_account_authority_create_operation &o);
 };
 
-class update_custom_account_authority_evaluator : public fee_handling_evaluator<update_custom_account_authority_evaluator>
+class update_custom_account_authority_evaluator : public evaluator<update_custom_account_authority_evaluator>
 {
 public:
    typedef custom_account_authority_update_operation operation_type;
@@ -26,7 +26,7 @@ public:
    object_id_type do_apply(const custom_account_authority_update_operation &o);
 };
 
-class delete_custom_account_authority_evaluator : public fee_handling_evaluator<delete_custom_account_authority_evaluator>
+class delete_custom_account_authority_evaluator : public evaluator<delete_custom_account_authority_evaluator>
 {
 public:
    typedef custom_account_authority_delete_operation operation_type;

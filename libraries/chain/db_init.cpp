@@ -588,8 +588,9 @@ void database::init_genesis(const genesis_state_type& genesis_state)
       });
    }
 
-    // Create balances for all bts accounts
-   for( const auto& account : genesis_state.initial_accounts ) {
+    // Create balances for all bts accounts ..... commented by Satia
+   /*for( const auto& account : genesis_state.initial_accounts ) 
+   {
       if (account.core_balance != share_type()) {
          total_supplies[asset_id_type()] += account.core_balance;
 
@@ -598,6 +599,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
             b.balance = account.core_balance;
          });
       }
+   }*/
 
    // Create initial balances
    share_type total_allocation;
