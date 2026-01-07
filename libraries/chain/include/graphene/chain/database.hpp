@@ -48,9 +48,8 @@ namespace graphene { namespace chain {
    {
       public:
          //////////////////// db_management.cpp ////////////////////
-
-         database();
-         ~database();
+      database(bool allow_testing_edits = false);
+      ~database();
 
          enum validation_steps
          {
@@ -164,6 +163,10 @@ namespace graphene { namespace chain {
          uint32_t  push_applied_operation( const operation& op );
          void      set_applied_operation_result( uint32_t op_id, const operation_result& r );
          const vector<optional< operation_history_object > >& get_applied_operations()const;
+
+          // the bookie plugin depends on change notifications that are skipped during normal replays
+         
+         void force_slow_replays();
 
          string to_pretty_string( const asset& a )const;
 

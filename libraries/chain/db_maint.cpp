@@ -1318,5 +1318,5 @@ uint64_t database::get_maintenance_seed() const
 {
    return _maintenance_prng.get_seed();
 }
-} //Chain namespace
+    } //Chain namespace
 }//graphene namespace
