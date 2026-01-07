@@ -694,6 +694,7 @@ namespace graphene { namespace chain {
          bool                              _track_standby_votes = true;
 
          fc::hash_ctr_rng<secret_hash_type, 20> _random_number_generator;
+         bool                              _slow_replays = false;
 
          /**
           * Whether database is successfully opened or not.
