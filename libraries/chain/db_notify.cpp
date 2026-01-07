@@ -467,13 +467,6 @@ struct get_impacted_account_visitor
    void operator()( const nft_lottery_token_purchase_operation& op ){
       _impacted.insert( op.buyer );
    }
-   void operator()( const nft_lottery_reward_operation& op ) {
-      _impacted.insert( op.winner );
-   }
-   void operator()( const nft_lottery_end_operation& op ) {}
-   void operator()( const son_create_operation& op ) {
-      _impacted.insert( op.owner_account );
-   }
 };
 
 } // namespace detail
@@ -570,29 +563,29 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
         } case ico_balance_object_type:{
            /** these are free from any accounts */
            break;
-        case custom_account_authority_object_type:
+        }case custom_account_authority_object_type:
            break;
-         case offer_object_type:{
+         }case offer_object_type:{
            auto aobj = dynamic_cast<const offer_object*>(obj);
            assert(aobj != nullptr);
            accounts.insert(aobj->issuer);
            if (aobj->bidder.valid())
                accounts.insert(*aobj->bidder);
            break;
-        case nft_object_type:{
+         }case nft_object_type:{
            auto aobj = dynamic_cast<const nft_object*>(obj);
            assert(aobj != nullptr);
            accounts.insert(aobj->owner);
            accounts.insert(aobj->approved);
            accounts.insert(aobj->approved_operators.begin(), aobj->approved_operators.end());
            break;
-        case account_role_object_type:{
+        }case account_role_object_type:{
            const auto& aobj = dynamic_cast<const account_role_object*>(obj);
            assert( aobj != nullptr );
            accounts.insert( aobj->owner );
            accounts.insert( aobj->whitelisted_accounts.begin(), aobj->whitelisted_accounts.end() );
            break;
-        case custom_permission_object_type:{
+        }case custom_permission_object_type:{
            auto aobj = dynamic_cast<const custom_permission_object*>(obj);
            assert(aobj != nullptr);
            accounts.insert(aobj->account);
@@ -606,12 +599,12 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
               if (aobj->bidder.valid())
                   accounts.insert(*aobj->bidder);
               break;
-         case impl_sweeps_vesting_balance_object_type:{
+         }case impl_sweeps_vesting_balance_object_type:{
               const auto& aobj = dynamic_cast<const sweeps_vesting_balance_object*>(obj);
               assert( aobj != nullptr );
               accounts.insert(aobj->owner);
               break;
-       case htlc_object_type:{
+       }case htlc_object_type:{
               const auto& htlc_obj = dynamic_cast<const htlc_object*>(obj);
               FC_ASSERT( htlc_obj != nullptr );
               accounts.insert( htlc_obj->transfer.from );
@@ -650,8 +643,7 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            FC_ASSERT( cr_obj != nullptr );
            accounts.insert( cr_obj->account );
            break;
-        }
-        case tank_object_type:{
+        }case tank_object_type:{
               const auto& tank_obj = dynamic_cast<const tank_object*>(obj);
               FC_ASSERT( tank_obj != nullptr );
               graphene::protocol::tnt::tank_validator val(tank_obj->schematic, 0);

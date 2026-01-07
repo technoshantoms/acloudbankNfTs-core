@@ -6,6 +6,7 @@
 
 #include <graphene/db/object.hpp>
 #include <graphene/db/generic_index.hpp>
+#include <boost/multi_index/composite_key.hpp>
 
 namespace graphene { namespace chain {
    using namespace graphene::db;
