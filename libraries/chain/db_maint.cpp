@@ -2,7 +2,7 @@
  * AcloudBank
  *
  */
-
+#include <graphene/protocol/chain_parameters.hpp>
 #include <fc/uint128.hpp>
 
 #include <graphene/chain/database.hpp>
@@ -897,25 +897,6 @@ void update_median_feeds(database& db)
    }
 }
 
-void rolling_period_start(database& db)
-{
-   if(db.head_block_time() >= HARDFORK_GPOS_TIME)
-   {
-      auto gpo = db.get_global_properties();
-      auto period_start = db.get_global_properties().parameters.gpos_period_start();
-      auto vesting_period = db.get_global_properties().parameters.gpos_period();
-
-      auto now = db.head_block_time();
-      if(now.sec_since_epoch() >= (period_start + vesting_period))
-      {
-         // roll
-         db.modify(db.get_global_properties(), [period_start, vesting_period](global_property_object& p) {
-            p.parameters.extensions.value.gpos_period_start =  period_start + vesting_period;
-         });
-      }
-   }
-}
-
 void clear_expired_custom_account_authorities(database& db)
 {
    const auto& cindex = db.get_index_type<custom_account_authority_index>().indices().get<by_expiration>();
@@ -1233,16 +1214,16 @@ void database::perform_chain_maintenance(const signed_block& next_block, const g
          p.parameters = std::move(*p.pending_parameters);
          p.pending_parameters.reset();
 
-         if( !p.pending_parameters->extensions.value.rbac_max_permissions_per_account.valid() )
-            p.pending_parameters->extensions.value.rbac_max_permissions_per_account = p.parameters.extensions.value.rbac_max_permissions_per_account;
-         if( !p.pending_parameters->extensions.value.rbac_max_account_authority_lifetime.valid() )
-            p.pending_parameters->extensions.value.rbac_max_account_authority_lifetime = p.parameters.extensions.value.rbac_max_account_authority_lifetime;
-         if( !p.pending_parameters->extensions.value.rbac_max_authorities_per_permission.valid() )
-            p.pending_parameters->extensions.value.rbac_max_authorities_per_permission = p.parameters.extensions.value.rbac_max_authorities_per_permission;
-         if( !p.pending_parameters->extensions.value.account_roles_max_per_account.valid() )
-            p.pending_parameters->extensions.value.account_roles_max_per_account = p.parameters.extensions.value.account_roles_max_per_account;
-         if( !p.pending_parameters->extensions.value.account_roles_max_lifetime.valid() )
-            p.pending_parameters->extensions.value.account_roles_max_lifetime = p.parameters.extensions.value.account_roles_max_lifetime;
+         if( !p.pending_parameters->extensionss.value.rbac_max_permissions_per_account.valid() )
+            p.pending_parameters->extensionss.value.rbac_max_permissions_per_account = p.parameters.extensionss.value.rbac_max_permissions_per_account;
+         if( !p.pending_parameters->extensionss.value.rbac_max_account_authority_lifetime.valid() )
+            p.pending_parameters->extensionss.value.rbac_max_account_authority_lifetime = p.parameters.extensionss.value.rbac_max_account_authority_lifetime;
+         if( !p.pending_parameters->extensionss.value.rbac_max_authorities_per_permission.valid() )
+            p.pending_parameters->extensionss.value.rbac_max_authorities_per_permission = p.parameters.extensionss.value.rbac_max_authorities_per_permission;
+         if( !p.pending_parameters->extensionss.value.account_roles_max_per_account.valid() )
+            p.pending_parameters->extensionss.value.account_roles_max_per_account = p.parameters.extensionss.value.account_roles_max_per_account;
+         if( !p.pending_parameters->extensionss.value.account_roles_max_lifetime.valid() )
+            p.pending_parameters->extensionss.value.account_roles_max_lifetime = p.parameters.extensionss.value.account_roles_max_lifetime;
 
       }
    });
