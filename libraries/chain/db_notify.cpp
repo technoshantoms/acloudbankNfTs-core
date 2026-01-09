@@ -506,7 +506,7 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            accounts.insert( aobj->issuer );
            break;
         }case random_number_object_type:{
-           const auto& aobj = dynamic_cast<const random_number_object_type*>(obj);
+           const auto& aobj = dynamic_cast<const random_number_object*>(obj);
            assert( aobj != nullptr );
            accounts.insert( aobj->account );
            break;
