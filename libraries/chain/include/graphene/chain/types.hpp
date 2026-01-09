@@ -51,3 +51,7 @@ GRAPHENE_DEFINE_IDS(chain, implementation_ids, impl_,
                     /* 2.18.x */(sweeps_vesting_balance)
                     /* 2.19.x */(offer_history)
                    )
+//satia: please fix me!
+GRAPHENE_DEFINE_IDS(chain, api_ids, api_,
+                    (operation_history)
+                    (account_transaction_history))

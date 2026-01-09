@@ -396,6 +396,16 @@ struct get_impacted_account_visitor
       _impacted.insert( op.fee_payer() );
       _impacted.insert( op.account );
    }
+        //satia refferal
+   //void operator()( const affiliate_referral_payout_operation& op ) { }
+      //satia ticket
+   void operator()( const ticket_purchase_operation& op )
+    {
+       _impacted.insert( op.buyer );
+    }
+   //lottery_asset_create_operation
+   // satia
+   void operator()( const lottery_asset_create_operation& op ) {}
     void operator()( const lottery_reward_operation& op ) {
       _impacted.insert( op.winner );
    }
@@ -469,6 +479,16 @@ struct get_impacted_account_visitor
    }
    void operator()( const nft_lottery_token_purchase_operation& op ){
       _impacted.insert( op.buyer );
+   }
+   void operator()( const nft_lottery_reward_operation& op ) {
+      _impacted.insert( op.winner );
+   }
+   void operator()( const nft_lottery_end_operation& op ) {}
+   void operator()( const son_create_operation& op ) {
+      _impacted.insert( op.owner_account );
+   }
+    void operator()( const random_number_store_operation& op ){
+      _impacted.insert( op.account );
    }
 };
 
@@ -654,8 +674,7 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
         }
       }
    }
-   else if( obj->id.space() == implementation_ids )
-   {
+   else if( obj->id.space() == implementation_ids ) {
       switch( (impl_object_type)obj->id.type() )
       {
              case impl_global_property_object_type:
@@ -719,6 +738,19 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
               break;
             case impl_nft_lottery_balance_object_type:
               break;
+      }
+   }else if( obj->id.space() == api_ids ) {
+      switch( (api_object_type)obj->id.type() )
+      {
+        case graphene::chain::api_operation_history_object_type: {
+           const auto& aobj = dynamic_cast<const operation_history_object*>(obj);
+           assert( aobj != nullptr );
+           operation_get_impacted_accounts( aobj->op, accounts,
+                                            ignore_custom_operation_required_auths);
+           break;
+        }
+        case api_account_transaction_history_object_type:
+           break;
       }
    }
 } // end get_relevant_accounts( const object* obj, flat_set<account_id_type>& accounts )
