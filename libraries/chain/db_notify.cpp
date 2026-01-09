@@ -705,6 +705,8 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
               break;
            } case impl_block_summary_object_type:
               break;
+             case impl_reserved1_object_type:
+              break;
               case impl_lottery_balance_object_type:
               break;
              case impl_sweeps_vesting_balance_object_type:{

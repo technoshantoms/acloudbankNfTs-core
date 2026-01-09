@@ -10,7 +10,7 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ *s
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
@@ -39,7 +39,7 @@ GRAPHENE_DEFINE_IDS(chain, implementation_ids, impl_,
                     /* 2.6.x  */ (account_statistics)
                     /* 2.7.x  */ (transaction_history)
                     /* 2.8.x  */ (block_summary)
-                    /* 2.9.x  */ (account_transaction_history)
+                    /* 2.9.x  */ (reserved1/*account_transaction_history, moved to api_ids*/)
                     /* 2.10.x */ (chain_property)
                     /* 2.11.x */ (witness_schedule)
                     /* 2.12.x */ (budget_record)
