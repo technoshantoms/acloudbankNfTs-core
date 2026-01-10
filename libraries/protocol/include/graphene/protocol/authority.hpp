@@ -35,6 +35,7 @@ namespace graphene { namespace protocol {
    struct authority
    {
       authority(uint32_t threshold = 0) : weight_threshold(threshold) {}
+      authority(){}
       template<class ...Args>
       authority(uint32_t threshhold, Args... auths)
          : weight_threshold(threshhold)

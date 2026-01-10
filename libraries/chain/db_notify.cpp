@@ -750,6 +750,7 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
    }
 } // namespace detail
 
+namespace graphene { namespace chain {
 void database::notify_applied_block( const signed_block& block )
 {
    GRAPHENE_TRY_NOTIFY( applied_block, block )
