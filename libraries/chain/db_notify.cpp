@@ -488,8 +488,6 @@ struct get_impacted_account_visitor
    }
 };
 
-} // namespace detail
-
 void operation_get_impacted_accounts( const operation& op, flat_set<account_id_type>& result, 
       bool ignore_custom_operation_required_auths ) 
 {
@@ -558,6 +556,8 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            FC_ASSERT( aobj != nullptr );
            transaction_get_impacted_accounts( aobj->proposed_transaction, accounts,
                                               ignore_custom_operation_required_auths );
+           break;
+        } case reserved0_object_type:{
            break;
         } 
          //case operation_history_object_type:{
@@ -748,7 +748,7 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            break;
       }
    }
-} // end get_relevant_accounts( const object* obj, flat_set<account_id_type>& accounts )
+} // namespace detail
 
 void database::notify_applied_block( const signed_block& block )
 {
