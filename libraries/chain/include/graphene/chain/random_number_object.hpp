@@ -1,5 +1,4 @@
 #pragma once
-#include <graphene/db/object.hpp>
 #include <graphene/db/generic_index.hpp>
 #include <graphene/chain/types.hpp>
 

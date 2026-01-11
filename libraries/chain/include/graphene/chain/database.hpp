@@ -48,7 +48,8 @@ namespace graphene { namespace chain {
    {
       public:
          //////////////////// db_management.cpp ////////////////////
-      database(bool allow_testing_edits = false);
+
+       database(bool allow_testing_edits = false);
       ~database();
 
          enum validation_steps
@@ -59,7 +60,7 @@ namespace graphene { namespace chain {
             skip_transaction_dupe_check = 1 << 2,  ///< used while reindexing
             skip_block_size_check       = 1 << 4,  ///< used when applying locally generated transactions
             skip_tapos_check            = 1 << 5,  ///< used while reindexing -- note this skips expiration check as well
-            skip_authority_check        = 1 << 6,  ///< ought to be removed because effectively identical to skip_transaction_signatures
+            // skip_authority_check        = 1 << 6,  ///< removed because effectively identical to skip_transaction_signatures
             skip_merkle_check           = 1 << 7,  ///< used while reindexing
             skip_assert_evaluation      = 1 << 8,  ///< used while reindexing
             skip_undo_history_check     = 1 << 9,  ///< used while reindexing
@@ -164,8 +165,12 @@ namespace graphene { namespace chain {
          void      set_applied_operation_result( uint32_t op_id, const operation_result& r );
          const vector<optional< operation_history_object > >& get_applied_operations()const;
 
+         // the account_history plugin uses the non-const version.  When it decides to track an 
+         // operation and assigns an operation_id to it, it will store that id into the operation
+         // history object so other plugins that evaluate later can reference it.
+         vector<optional< operation_history_object > >& get_applied_operations();
+
           // the bookie plugin depends on change notifications that are skipped during normal replays
-         
          void force_slow_replays();
 
          string to_pretty_string( const asset& a )const;
@@ -302,7 +307,7 @@ namespace graphene { namespace chain {
          void initialize_indexes();
          void init_genesis(const genesis_state_type& genesis_state = genesis_state_type());
 
-         template<typename EvaluatorType>
+           template<typename EvaluatorType>
          void register_evaluator()
          {
             _operation_evaluators[operation::tag<typename EvaluatorType::operation_type>::value]
@@ -389,12 +394,12 @@ namespace graphene { namespace chain {
          void debug_dump();
          void apply_debug_updates();
          void debug_update( const fc::variant_object& update );
-         template<typename Action>
-         auto bypass_safety_checks(Action&& action) {
-            FC_ASSERT(_allow_safety_check_bypass, "Safety check bypass disallowed.");
-            scoped_database_unlocker unlocker(*_check_policy_1, *_check_policy_2);
-            return action();
-         }
+         //template<typename Action>
+         //auto bypass_safety_checks(Action&& action) {
+          //  FC_ASSERT(_allow_safety_check_bypass, "Safety check bypass disallowed.");
+           // scoped_database_unlocker unlocker(*_check_policy_1, *_check_policy_2);
+           // return action();
+        // }
 
 
          //////////////////// db_market.cpp ////////////////////
@@ -694,7 +699,7 @@ namespace graphene { namespace chain {
          bool                              _track_standby_votes = true;
 
          fc::hash_ctr_rng<secret_hash_type, 20> _random_number_generator;
-         bool                              _slow_replays = false;
+          bool                              _slow_replays = false;
 
          /**
           * Whether database is successfully opened or not.
@@ -719,11 +724,11 @@ namespace graphene { namespace chain {
          ///@}
 
          /// Whether or not to allow safety check bypassing (for unit testing only)
-         bool _allow_safety_check_bypass;
+        // bool _allow_safety_check_bypass;
          /// Safety check policy for object space 1
-         database_lock_safety_check* _check_policy_1 = nullptr;
+        // database_lock_safety_check* _check_policy_1 = nullptr;
          /// Safety check policy for object space 2
-         database_lock_safety_check* _check_policy_2 = nullptr;
+        // database_lock_safety_check* _check_policy_2 = nullptr;
 
          /// Maintenance pseudo random number generator
          ///@{

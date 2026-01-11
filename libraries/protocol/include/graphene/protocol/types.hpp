@@ -238,8 +238,8 @@ const static uint16_t UIA_VALID_FLAGS_MASK = UIA_ASSET_ISSUER_PERMISSION_MASK;
 enum reserved_spaces {
     relative_protocol_ids = 0,
     protocol_ids          = 1,
-    implementation_ids    = 2,
-    api_ids               = 3 ///< Non-consensus objects used for API. Tracked by respective plugins.
+    implementation_ids    = 2
+    //api_ids               = 3 ///< Non-consensus objects used for API. Tracked by respective plugins.
 };
 
 inline bool is_relative(object_id_type o) { return o.space() == 0; }
@@ -314,7 +314,7 @@ GRAPHENE_DEFINE_IDS(protocol, protocol_ids, /*protocol objects are not prefixed*
                     /* 1.8.x  */ (call_order)
                     /* 1.9.x  */ (custom) // unused
                     /* 1.10.x */ (proposal)
-                    /* 1.11.x */ (reserved0/*operation_history, moved to api_ids*/)
+                    /* 1.11.x */ (operation_history/*reserved0, moved to api_ids*/)
                     /* 1.12.x */ (withdraw_permission)
                     /* 1.13.x */ (vesting_balance)
                     /* 1.14.x */ (worker)
