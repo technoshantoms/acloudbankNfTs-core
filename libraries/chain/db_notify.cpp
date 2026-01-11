@@ -711,7 +711,13 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
               assert( aobj != nullptr );
               accounts.insert(aobj->owner);
               break;
-           }case impl_offer_history_object_type:{
+           } case random_number_object_type:{
+               const auto& aobj = dynamic_cast<const random_number_object*>(obj);
+               assert( aobj != nullptr );
+               accounts.insert( aobj->random_number );
+               break;
+             }
+           case impl_offer_history_object_type:{
               const auto& aobj = dynamic_cast<const offer_history_object*>(obj);
               assert( aobj != nullptr );
               accounts.insert(aobj->issuer);
