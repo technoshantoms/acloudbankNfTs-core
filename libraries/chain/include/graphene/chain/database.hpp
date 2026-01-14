@@ -49,7 +49,7 @@ namespace graphene { namespace chain {
       public:
          //////////////////// db_management.cpp ////////////////////
 
-       database(bool allow_testing_edits = false);
+       database();
       ~database();
 
          enum validation_steps

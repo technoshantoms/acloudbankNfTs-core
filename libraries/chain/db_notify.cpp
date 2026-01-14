@@ -487,20 +487,19 @@ struct get_impacted_account_visitor
 };
 
 } // namespace detail
-
-void graphene::chain::operation_get_impacted_accounts( const operation& op, flat_set<account_id_type>& result, 
+void operation_get_impacted_accounts( const operation& op, flat_set<account_id_type>& result, 
       bool ignore_custom_operation_required_auths ) 
 {
-   detail::get_impacted_account_visitor vtor = detail::get_impacted_account_visitor( result, 
-   ignore_custom_operation_required_auths );
+  detail::get_impacted_account_visitor vtor = detail::get_impacted_account_visitor( result, 
+      ignore_custom_operation_required_auths );
   op.visit( vtor );
 }
 
-void graphene::chain::transaction_get_impacted_accounts( const transaction& tx, flat_set<account_id_type>& result, 
+void transaction_get_impacted_accounts( const transaction& tx, flat_set<account_id_type>& result, 
       bool ignore_custom_operation_required_auths ) 
 {
   for( const auto& op : tx.operations )
-    graphene::chain::operation_get_impacted_accounts( op, result, ignore_custom_operation_required_auths );
+    operation_get_impacted_accounts( op, result, ignore_custom_operation_required_auths );
 }
 
 void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accounts,
@@ -651,14 +650,14 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
                accounts.insert(*aobj->revenue_partner);
            break;
         } 
-          // case random_number_object_type:{
-          //     const auto& aobj = dynamic_cast<const random_number_object*>(obj);
-          //     assert( aobj != nullptr );
-          //     accounts.insert(*aobj->account);
-          //     accounts.insert(*aobj->random_number);
-          //     accounts.insert(*aobj->data);
-          //     break;
-          //  }
+        case random_number_object_type:{
+            const auto& aobj = dynamic_cast<const random_number_object*>(obj);
+            assert( aobj != nullptr );
+            accounts.insert(*aobj->account);
+            accounts.insert(*aobj->random_number);
+            accounts.insert(*aobj->data);
+            break;
+         }
        case nft_object_type:{
            auto aobj = dynamic_cast<const nft_object*>(obj);
            assert(aobj != nullptr);
