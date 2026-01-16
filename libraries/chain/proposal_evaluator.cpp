@@ -1,10 +1,8 @@
-#include <graphene/chain/hardfork.hpp>
+#include <graphene/chain/database.hpp>
 #include <graphene/chain/proposal_evaluator.hpp>
 #include <graphene/chain/proposal_object.hpp>
-#include <graphene/chain/account_object.hpp>
-#include <graphene/protocol/account.hpp>
 #include <graphene/protocol/fee_schedule.hpp>
-#include <graphene/chain/exceptions.hpp>
+#include <graphene/chain/hardfork.hpp>
 
 namespace graphene { namespace chain {
 
@@ -21,10 +19,11 @@ struct proposal_operation_hardfork_visitor
 
    proposal_operation_hardfork_visitor( const database& _db, const fc::time_point_sec bt )
    : db( _db ), block_time(bt), next_maintenance_time( db.get_dynamic_global_properties().next_maintenance_time ) {}
-
+   //template<typename T>
+   //void operator()(const T &v) const {}
    template<typename T,
             std::enable_if_t<operation::tag<T>::value < operation::tag<tank_create_operation>::value, bool> = true>
-   void operator()(const T &) const {}
+   void operator()(const T & v) const {}
 
    void operator()(const graphene::chain::asset_create_operation &v) const {
       v.common_options.validate_flags( v.bitasset_opts.valid() );
@@ -76,6 +75,94 @@ struct proposal_operation_hardfork_visitor
    }
    void operator()(const graphene::chain::custom_authority_delete_operation&) const {
       FC_ASSERT( HARDFORK_BSIP_40_PASSED(block_time), "Not allowed until hardfork BSIP 40" );
+   }
+
+   void operator()(const custom_permission_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_create_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_permission_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_update_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_permission_delete_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_permission_delete_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_create_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_update_operation not allowed yet!" );
+   }
+
+   void operator()(const custom_account_authority_delete_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "custom_account_authority_delete_operation not allowed yet!" );
+   }
+
+   void operator()(const offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "offer_operation not allowed yet!" );
+   }
+
+   void operator()(const bid_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "bid_operation not allowed yet!" );
+   }
+
+   void operator()(const cancel_offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "cancel_offer_operation not allowed yet!" );
+   }
+
+   void operator()(const finalize_offer_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "finalize_offer_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_metadata_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_metadata_create_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_metadata_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_metadata_update_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_mint_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_mint_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_safe_transfer_from_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_safe_transfer_from_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_approve_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_approve_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_set_approval_for_all_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_set_approval_for_all_operation not allowed yet!" );
+   }
+
+   void operator()(const account_role_create_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "account_role_create_operation not allowed yet!" );
+   }
+
+   void operator()(const account_role_update_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "account_role_update_operation not allowed yet!" );
+   }
+
+   void operator()(const account_role_delete_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "account_role_delete_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_lottery_token_purchase_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_lottery_token_purchase_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_lottery_reward_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_lottery_reward_operation not allowed yet!" );
+   }
+
+   void operator()(const nft_lottery_end_operation &v) const {
+       FC_ASSERT( block_time >= HARDFORK_NFT_TIME, "nft_lottery_end_operation not allowed yet!" );
    }
 
    using TNT_Ops = fc::typelist::list<tank_create_operation, tank_update_operation, tank_delete_operation,

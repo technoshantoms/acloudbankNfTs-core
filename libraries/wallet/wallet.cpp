@@ -777,6 +777,7 @@ signed_transaction wallet_api::transfer(string from, string to, string amount,
 {
    return my->transfer(from, to, amount, asset_symbol, memo, broadcast);
 }
+
 signed_transaction wallet_api::create_asset(string issuer,
                                             string symbol,
                                             uint8_t precision,
@@ -784,10 +785,10 @@ signed_transaction wallet_api::create_asset(string issuer,
                                             fc::optional<bitasset_options> bitasset_opts,
                                             bool broadcast)
 
-{
-   return my->create_asset(issuer, symbol, precision, common, bitasset_opts, broadcast);
-}
-  signed_transaction create_lottery(string issuer,
+     {
+         return my->create_asset(issuer, symbol, precision, common, bitasset_opts, broadcast);
+     }
+signed_transaction create_lottery(string issuer,
       string symbol,
       asset_options common,
       lottery_asset_options lottery_opts,

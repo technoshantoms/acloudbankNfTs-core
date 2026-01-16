@@ -396,14 +396,13 @@ struct get_impacted_account_visitor
    }
    //satia refferal
    //void operator()( const affiliate_referral_payout_operation& op ) { }
-      //satia ticket
-   void operator()( const ticket_purchase_operation& op )
-    {
-       _impacted.insert( op.buyer );
-    }
    //lottery_asset_create_operation
    // satia
    void operator()( const lottery_asset_create_operation& op ) {}
+    void operator()( const ticket_purchase_operation& op )
+    {
+       _impacted.insert( op.buyer );
+    }
     void operator()( const lottery_reward_operation& op ) {
       _impacted.insert( op.winner );
    }

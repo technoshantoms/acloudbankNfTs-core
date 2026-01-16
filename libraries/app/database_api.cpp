@@ -6,6 +6,11 @@
 #include "database_api_impl.hxx"
 
 #include <graphene/chain/account_object.hpp>
+#include <graphene/chain/account_role_object.hpp>
+#include <graphene/chain/custom_account_authority_object.hpp>
+#include <graphene/chain/custom_permission_object.hpp>
+#include <graphene/chain/nft_object.hpp>
+#include <graphene/chain/offer_object.hpp>
 
 #include <graphene/app/util.hpp>
 #include <graphene/chain/get_config.hpp>
@@ -1116,7 +1121,6 @@ asset database_api_impl::get_sweeps_vesting_balance_available_for_claim(account_
 // Markets / feeds                                                  //
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
-
 
 vector<limit_order_object> database_api::get_limit_orders(std::string a, std::string b, uint32_t limit)const
 {
