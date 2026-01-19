@@ -88,6 +88,7 @@ struct parameter_extension
 
       extension<ext> extensions;
 
+       /** defined in fee_schedule.cpp */
       void validate()const;
       
       chain_parameters();
@@ -114,10 +115,7 @@ struct parameter_extension
       inline account_id_type sweeps_vesting_accumulator_account()const {
          return extensions.value.sweeps_vesting_accumulator_account.valid() ? *extensions.value.sweeps_vesting_accumulator_account : SWEEPS_ACCUMULATOR_ACCOUNT;
       }
-
-      static void safe_copy(chain_parameters& to, const chain_parameters& from);
-
-     inline uint16_t rbac_max_permissions_per_account()const {
+      inline uint16_t rbac_max_permissions_per_account()const {
          return extensions.value.rbac_max_permissions_per_account.valid() ? *extensions.value.rbac_max_permissions_per_account : RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
       }
       inline uint32_t rbac_max_account_authority_lifetime()const {
@@ -131,7 +129,8 @@ struct parameter_extension
       }
       inline uint32_t account_roles_max_lifetime()const {
          return extensions.value.account_roles_max_lifetime.valid() ? *extensions.value.account_roles_max_lifetime : ACCOUNT_ROLES_MAX_LIFETIME;
-      }*/
+      }
+      */
       private:
       static void safe_copy(chain_parameters& to, const chain_parameters& from);
    };
@@ -150,16 +149,6 @@ FC_REFLECT( graphene::protocol::custom_authority_options_type,
       (max_custom_authority_restrictions)
 )
 
-FC_REFLECT( graphene::protocol::chain_parameters::ext,
-      (updatable_htlc_options)
-      (custom_authority_options)
-      (updatable_tnt_options)
-      (updatable_nft_options)
-      (market_fee_network_percent)
-      (maker_fee_discount_percent)
-      (electoral_threshold)
-)
-
 FC_REFLECT( graphene::protocol::parameter_extension,
    (rbac_max_permissions_per_account)
    (rbac_max_account_authority_lifetime)
@@ -169,6 +158,16 @@ FC_REFLECT( graphene::protocol::parameter_extension,
    (sweeps_distribution_percentage)
    (sweeps_distribution_asset)
    (sweeps_vesting_accumulator_account)
+)
+
+FC_REFLECT( graphene::protocol::chain_parameters::ext,
+      (updatable_htlc_options)
+      (custom_authority_options)
+      (updatable_tnt_options)
+      (updatable_nft_options)
+      (market_fee_network_percent)
+      (maker_fee_discount_percent)
+      (electoral_threshold)
 )
 
 FC_REFLECT( graphene::protocol::chain_parameters,

@@ -1,5 +1,3 @@
-
-
 #include <graphene/chain/custom_authority_evaluator.hpp>
 #include <graphene/chain/custom_authority_object.hpp>
 #include <graphene/chain/account_object.hpp>

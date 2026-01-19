@@ -65,6 +65,7 @@ struct hardfork_visitor {
                       nft_lottery_token_purchase_operation,nft_lottery_reward_operation,nft_lottery_end_operation >;
          
    fc::time_point_sec now;
+   const fc::time_point_sec block_time;
 
    hardfork_visitor(fc::time_point_sec now) : now(now) {}
 
@@ -87,7 +88,7 @@ struct hardfork_visitor {
    visit() { return true; }
    template<typename Op>
    std::enable_if_t<TL::contains<nft_ops, Op>(), bool>
-   visit() { return HARDFORK_NFT_PASSED (now); }
+   visit() { return true; } 
    /// @}
 
    /// typelist::runtime::dispatch adaptor

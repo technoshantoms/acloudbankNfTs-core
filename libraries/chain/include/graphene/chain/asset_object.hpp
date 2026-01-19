@@ -417,7 +417,12 @@ namespace graphene { namespace chain {
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
          ordered_unique< tag<by_symbol>, member<asset_object, string, &asset_object::symbol> >,
-         ordered_non_unique< tag<by_issuer>, member<asset_object, account_id_type, &asset_object::issuer > >,
+         ordered_unique< tag<by_issuer>,
+            composite_key< asset_object,
+                member< asset_object, account_id_type, &asset_object::issuer >,
+                member< object, object_id_type, &object::id >
+            >
+         >,
          ordered_non_unique< tag<active_lotteries>,
             identity< asset_object >,
             lottery_asset_comparer
