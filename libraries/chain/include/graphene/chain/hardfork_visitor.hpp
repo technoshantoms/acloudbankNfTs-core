@@ -55,17 +55,12 @@ struct hardfork_visitor {
    using ticket_ops  = TL::list<ticket_create_operation, ticket_update_operation>;
    using ico_ops     = TL::list<ico_balance_claim_operation>;
 
-   using nft_ops     = TL::list<custom_permission_create_operation, custom_permission_update_operation, 
-                      custom_permission_delete_operation, custom_account_authority_create_operation,
-                      custom_account_authority_update_operation,custom_account_authority_delete_operation,
-                      offer_operation,bid_operation,cancel_offer_operation,finalize_offer_operation,
-                      nft_metadata_create_operation,nft_metadata_update_operation,nft_mint_operation,
-                      nft_safe_transfer_from_operation,nft_approve_operation,nft_set_approval_for_all_operation,
-                      account_role_create_operation,account_role_update_operation,account_role_delete_operation,
-                      nft_lottery_token_purchase_operation,nft_lottery_reward_operation,nft_lottery_end_operation >;
-         
+   using nft_ops  = TL::list<custom_account_authority_create_operation, 
+                         custom_account_authority_update_operation, 
+                         offer_operation,bid_operation,nft_mint_operation, 
+                         cancel_offer_operation>;
+
    fc::time_point_sec now;
-   //const fc::time_point_sec block_time;
 
    hardfork_visitor(fc::time_point_sec now) : now(now) {}
 
@@ -81,14 +76,14 @@ struct hardfork_visitor {
    std::enable_if_t<TL::contains<TNT_ops, Op>(), bool>
    visit() { return HARDFORK_BSIP_72_PASSED(now); }
    template<typename Op>
+   std::enable_if_t<TL::contains<nft_ops, Op>(), bool>
+   visit() { return HARDFORK_NFT_TIME_PASSED(now); }
+   template<typename Op>
    std::enable_if_t<TL::contains<ticket_ops, Op>(), bool>
    visit() { return true; }
    template<typename Op>
    std::enable_if_t<TL::contains<ico_ops, Op>(), bool>
    visit() { return true; }
-   template<typename Op>
-   std::enable_if_t<TL::contains<nft_ops, Op>(), bool>
-   visit() { return true; } 
    /// @}
 
    /// typelist::runtime::dispatch adaptor

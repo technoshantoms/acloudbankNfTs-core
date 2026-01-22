@@ -25,7 +25,7 @@
 #include <graphene/chain/database.hpp>
 #include <graphene/chain/proposal_evaluator.hpp>
 #include <graphene/chain/proposal_object.hpp>
-#include <graphene/chain/hardfork.hpp>
+//#include <graphene/chain/hardfork.hpp>
 #include <graphene/chain/exceptions.hpp>
 
 namespace graphene { namespace chain {
