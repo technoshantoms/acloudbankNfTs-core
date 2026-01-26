@@ -20,7 +20,6 @@ void_result custom_authority_create_evaluator::do_evaluate(const custom_authorit
    const auto& config = d.get_global_properties().parameters.extensions.value.custom_authority_options;
    FC_ASSERT(config.valid(), "Cannot use custom authorities yet: global configuration not set");
    FC_ASSERT(op.valid_to > now, "Custom authority expiration must be in the future");
-   //FC_ASSERT((op.valid_to - op.valid_from) <= fc::seconds(d.get_global_properties().parameters.rbac_max_account_authority_lifetime()), "Validity of the auth beyond max expiry");
    FC_ASSERT((op.valid_to - now).to_seconds() <= config->max_custom_authority_lifetime_seconds,
             "Custom authority lifetime exceeds maximum limit");
 

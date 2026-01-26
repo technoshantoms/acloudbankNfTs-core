@@ -64,10 +64,9 @@ namespace graphene
         {
         public:
             virtual void object_inserted(const object &obj) override;
-            virtual void object_removed(const object &obj) override;
-            virtual void about_to_modify(const object &before) override{};
+            virtual void about_to_modify(const object &before) override;
             virtual void object_modified(const object &after) override;
-
+            virtual void object_removed(const object &obj) override;
             set<nft_id_type> _locked_items;
         };
 

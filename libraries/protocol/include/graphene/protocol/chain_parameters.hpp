@@ -7,6 +7,7 @@
 #include <memory>
 #include <graphene/protocol/base.hpp>
 #include <graphene/protocol/tnt/parameters.hpp>
+#include <graphene/protocol/config.hpp>
 
 namespace graphene { namespace protocol {
    struct fee_schedule;
@@ -106,7 +107,32 @@ struct parameter_extension
       /// If @ref electoral_threshold is valid, return the value it contains, otherwise return 0
       uint16_t get_electoral_threshold() const;
 
-     /* inline uint16_t sweeps_distribution_percentage()const {
+    inline uint16_t sweeps_distribution_percentage()const {
+         return  SWEEPS_DEFAULT_DISTRIBUTION_PERCENTAGE;
+      }
+      inline asset_id_type sweeps_distribution_asset()const {
+         return  SWEEPS_DEFAULT_DISTRIBUTION_ASSET;
+      }
+      inline account_id_type sweeps_vesting_accumulator_account()const {
+         return  SWEEPS_ACCUMULATOR_ACCOUNT;
+      }
+      inline uint16_t rbac_max_permissions_per_account()const {
+         return  RBAC_MAX_PERMISSIONS_PER_ACCOUNT;
+      }
+      inline uint32_t rbac_max_account_authority_lifetime()const {
+         return  RBAC_MAX_ACCOUNT_AUTHORITY_LIFETIME;
+      }
+      inline uint16_t rbac_max_authorities_per_permission()const {
+         return  RBAC_MAX_AUTHS_PER_PERMISSION;
+      }
+      inline uint16_t account_roles_max_per_account()const {
+         return  ACCOUNT_ROLES_MAX_PER_ACCOUNT;
+      }
+      inline uint32_t account_roles_max_lifetime()const {
+         return  ACCOUNT_ROLES_MAX_LIFETIME;
+      }
+
+      /*inline uint16_t sweeps_distribution_percentage()const {
          return extensions.value.sweeps_distribution_percentage.valid() ? *extensions.value.sweeps_distribution_percentage : SWEEPS_DEFAULT_DISTRIBUTION_PERCENTAGE;
       }
       inline asset_id_type sweeps_distribution_asset()const {
@@ -129,8 +155,8 @@ struct parameter_extension
       }
       inline uint32_t account_roles_max_lifetime()const {
          return extensions.value.account_roles_max_lifetime.valid() ? *extensions.value.account_roles_max_lifetime : ACCOUNT_ROLES_MAX_LIFETIME;
-      }
-      */
+      }*/
+      
       private:
       static void safe_copy(chain_parameters& to, const chain_parameters& from);
    };
