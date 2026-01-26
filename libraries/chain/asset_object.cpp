@@ -1,6 +1,7 @@
 /*
  * acloudbank
  */
+#include <graphene/chain/operation_history_object.hpp>
 #include <graphene/chain/asset_object.hpp>
 #include <graphene/chain/database.hpp>
 #include <graphene/chain/hardfork.hpp>
@@ -387,5 +388,5 @@ GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::price_feed_with_icr 
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_object )
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_bitasset_data_object )
 GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::asset_dynamic_data_object )
-GRAPHENE_EXTERNAL_SERIALIZATION( graphene::chain::lottery_balance_object )
-GRAPHENE_EXTERNAL_SERIALIZATION( graphene::chain::sweeps_vesting_balance_object )
+GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::lottery_balance_object )
+GRAPHENE_IMPLEMENT_EXTERNAL_SERIALIZATION( graphene::chain::sweeps_vesting_balance_object )
