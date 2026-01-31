@@ -87,7 +87,6 @@
                                 // strongly at the value amount that is being hidden.
 namespace graphene { namespace wallet {
    using fc::optional;
-
    fc::sha256 signed_message::digest()const
    {
       fc::stringstream to_sign;

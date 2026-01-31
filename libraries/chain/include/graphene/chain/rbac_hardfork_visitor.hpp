@@ -22,6 +22,17 @@ namespace graphene
                 case operation::tag<custom_authority_delete_operation>::value:
                      FC_ASSERT(block_time >= HARDFORK_BSIP_40_TIME, "HARDFORK_BSIP_40 and custom not allowed on this operation yet!");
                      break;
+               /* 
+               case operation::tag<sidechain_address_add_operation>::value:
+                case operation::tag<sidechain_address_update_operation>::value:
+                case operation::tag<sidechain_address_delete_operation>::value:
+                case operation::tag<sidechain_transaction_create_operation>::value:
+                case operation::tag<sidechain_transaction_sign_operation>::value:
+                case operation::tag<sidechain_transaction_send_operation>::value:
+                case operation::tag<sidechain_transaction_settle_operation>::value:
+                    FC_ASSERT(block_time >= HARDFORK_SON_TIME, "Custom permissions and roles not allowed on this operation yet!");
+                    break;
+                */
                 case operation::tag<tank_create_operation>::value:
                 case operation::tag<tank_update_operation>::value:
                 case operation::tag<tank_delete_operation>::value:

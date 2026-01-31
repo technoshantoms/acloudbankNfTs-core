@@ -35,6 +35,15 @@
 #include <graphene/protocol/custom_account_authority.hpp>
 #include <graphene/protocol/offer.hpp>
 #include <graphene/protocol/nft_ops.hpp>
+
+/*
+#include <graphene/protocol/sidechain_address.hpp>
+#include <graphene/protocol/son_wallet.hpp>
+#include <graphene/protocol/son_wallet_deposit.hpp>
+#include <graphene/protocol/son_wallet_withdraw.hpp>
+#include <graphene/protocol/sidechain_transaction.hpp>
+*/
+
 #include <graphene/protocol/random_number.hpp>
 
 
@@ -147,6 +156,15 @@ namespace graphene { namespace protocol {
             /* 98 */ nft_lottery_end_operation,
             /* 99 */random_number_store_operation
            // /* 100 */ affiliate_referral_payout_operation // VIRTUAL
+            /*
+            sidechain_address_add_operation,
+            sidechain_address_update_operation,
+            sidechain_address_delete_operation,
+            sidechain_transaction_create_operation,
+            sidechain_transaction_sign_operation,
+            sidechain_transaction_send_operation,
+            sidechain_transaction_settle_operation,
+            */
          > operation;
 
    /// @} // operations group

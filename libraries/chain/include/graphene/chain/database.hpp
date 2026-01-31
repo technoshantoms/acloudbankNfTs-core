@@ -14,6 +14,12 @@
 #include <graphene/db/object_database.hpp>
 #include <graphene/db/object.hpp>
 #include <graphene/db/simple_index.hpp>
+
+
+//#include <graphene/protocol/fee_schedule.hpp>
+//#include <graphene/protocol/protocol.hpp>
+//#include <graphene/protocol/sidechain_defs.hpp>
+
 #include <fc/signals.hpp>
 
 #include <fc/log/logger.hpp>

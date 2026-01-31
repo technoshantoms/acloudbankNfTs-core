@@ -109,6 +109,8 @@ typedef generic_index<proposal_object, proposal_multi_index_container> proposal_
 
 MAP_OBJECT_ID_TO_TYPE(graphene::chain::proposal_object)
 
+FC_REFLECT_TYPENAME( graphene::chain::proposal_object )
+
 FC_REFLECT_DERIVED( graphene::chain::proposal_object, (graphene::chain::object),
                     (expiration_time)(review_period_time)(proposed_transaction)(required_active_approvals)
                     (available_active_approvals)(required_owner_approvals)(available_owner_approvals)

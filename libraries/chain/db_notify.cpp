@@ -33,6 +33,8 @@
 #include <graphene/chain/account_role_object.hpp>
 #include <graphene/chain/random_number_object.hpp>
 
+//#include <graphene/chain/sidechain_address_object.hpp>
+
 #include <graphene/chain/account_object.hpp>
 #include <graphene/protocol/random_number.hpp>
 
@@ -482,6 +484,29 @@ struct get_impacted_account_visitor
    void operator()( const nft_lottery_token_purchase_operation& op ){
       _impacted.insert( op.buyer );
    }
+   /* 
+   void operator()( const sidechain_address_add_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_address_update_operation& op ) {
+       _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_address_delete_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_transaction_create_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_transaction_sign_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_transaction_send_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   void operator()( const sidechain_transaction_settle_operation& op ) {
+      _impacted.insert( op.payer );
+   }
+   */
     void operator()( const random_number_store_operation& op ){
       _impacted.insert( op.account );
    }
@@ -673,6 +698,16 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            accounts.insert( aobj->whitelisted_accounts.begin(), aobj->whitelisted_accounts.end() );
            break;
         }
+       /* 
+       case sidechain_address_object_type:{
+           const auto& aobj = dynamic_cast<const sidechain_address_object*>(obj);
+           assert( aobj != nullptr );
+           accounts.insert( aobj->sidechain_address_account );
+           break;
+        } case sidechain_transaction_object_type:{
+           break;
+        }
+        */
       }
    }
    else if( obj->id.space() == implementation_ids )
