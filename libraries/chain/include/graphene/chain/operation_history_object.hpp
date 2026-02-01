@@ -50,8 +50,8 @@ namespace graphene { namespace chain {
    class operation_history_object : public abstract_object<operation_history_object>
    {
       public:
-         static constexpr uint8_t space_id = protocol_ids;
-         static constexpr uint8_t type_id  = operation_history_object_type;
+         static constexpr uint8_t space_id = api_ids;
+         static constexpr uint8_t type_id  = api_operation_history_object_type;
 
          operation_history_object( const operation& o ):op(o){}
          operation_history_object(){}
@@ -146,5 +146,11 @@ MAP_OBJECT_ID_TO_TYPE(graphene::chain::account_transaction_history_object)
 FC_REFLECT_TYPENAME( graphene::chain::operation_history_object )
 FC_REFLECT_TYPENAME( graphene::chain::account_transaction_history_object )
 
+/*
+FC_REFLECT_DERIVED( graphene::chain::operation_history_object, (graphene::chain::object),
+                    (op)(result)(block_num)(trx_in_block)(op_in_trx)(virtual_op) )
+FC_REFLECT_DERIVED( graphene::chain::account_transaction_history_object, (graphene::chain::object),
+                    (account)(operation_id)(sequence)(next) )
+*/
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::operation_history_object )
 GRAPHENE_DECLARE_EXTERNAL_SERIALIZATION( graphene::chain::account_transaction_history_object )

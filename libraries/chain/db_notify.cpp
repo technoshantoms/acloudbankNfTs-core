@@ -578,13 +578,15 @@ void get_relevant_accounts( const object* obj, flat_set<account_id_type>& accoun
            transaction_get_impacted_accounts( aobj->proposed_transaction, accounts,
                                               ignore_custom_operation_required_auths );
            break;
-        } case operation_history_object_type:{
+        } 
+       /*case operation_history_object_type:{
            const auto& aobj = dynamic_cast<const operation_history_object*>(obj);
            FC_ASSERT( aobj != nullptr );
            operation_get_impacted_accounts( aobj->op, accounts,
                                             ignore_custom_operation_required_auths );
            break;
-        } case withdraw_permission_object_type:{
+        } */
+     case withdraw_permission_object_type:{
            const auto& aobj = dynamic_cast<const withdraw_permission_object*>(obj);
            FC_ASSERT( aobj != nullptr );
            accounts.insert( aobj->withdraw_from_account );
